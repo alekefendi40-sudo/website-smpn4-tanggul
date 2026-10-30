@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galeri Sekolah - SMP Negeri 4 Tanggul</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="logo">
+    <img src="assets/logo-sekolah.png" alt="Logo SMP Negeri 4 Tanggul">
+
+    <div class="logo-text">
+      <h1>SMP Negeri 4 Tanggul</h1>
+      <p>Website Resmi Sekolah</p>
+    </div>
+  </div>
+
+  <nav>
+    <a href="index.html">Beranda</a>
+    <a href="index.html#profil">Profil</a>
+    <a href="index.html#berita">Berita</a>
+    <a href="index.html#pengumuman">Pengumuman</a>
+    <a href="galeri.html">Galeri</a>
+    <a href="index.html#kontak">Kontak</a>
+  </nav>
+</header>
+
+<main>
+
+  <section class="galeri halaman-galeri">
+
+    <div class="section-heading">
+      <span class="section-label">DOKUMENTASI SEKOLAH</span>
+      <h2>Galeri SMP Negeri 4 Tanggul</h2>
+      <p>
+        Dokumentasi kegiatan, aktivitas, dan berbagai momen
+        warga SMP Negeri 4 Tanggul.
+      </p>
+    </div>
+
+    <div class="galeri-grid">
+
+      <div class="galeri-item">
+        <img src="https://placehold.co/600x400/037FC5/FFFFFF?text=Upacara+Sekolah"
+             alt="Kegiatan upacara sekolah">
+      </div>
+
+      <div class="galeri-item">
+        <img src="https://placehold.co/600x400/4D6478/FFFFFF?text=Kegiatan+Belajar"
+             alt="Kegiatan belajar">
+      </div>
+
+      <div class="galeri-item">
+        <img src="https://placehold.co/600x400/D8241B/FFFFFF?text=Ekstrakurikuler"
+             alt="Kegiatan ekstrakurikuler">
+      </div>
+
+      <div class="galeri-item">
+        <img src="https://placehold.co/600x400/77C4EE/242021?text=Prestasi+Siswa"
+             alt="Prestasi siswa">
+      </div>
+
+      <div class="galeri-item">
+        <img src="https://placehold.co/600x400/037FC5/FFFFFF?text=Kegiatan+Sekolah"
+             alt="Kegiatan sekolah">
+      </div>
+
+      <div class="galeri-item">
+        <img src="https://placehold.co/600x400/4D6478/FFFFFF?text=Lingkungan+Sekolah"
+             alt="Lingkungan sekolah">
+      </div>
+
+      <div class="galeri-item">
+        <img src="https://placehold.co/600x400/D8241B/FFFFFF?text=Kegiatan+Siswa"
+             alt="Kegiatan siswa">
+      </div>
+
+      <div class="galeri-item">
+        <img src="https://placehold.co/600x400/77C4EE/242021?text=Dokumentasi"
+             alt="Dokumentasi sekolah">
+      </div>
+
+    </div>
+
+    <div class="galeri-link">
+      <a href="index.html">Kembali ke Beranda</a>
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-content">
+    <h3>SMP Negeri 4 Tanggul</h3>
+    <p>Jl. Kamboja No. 95, Tanggul Kulon, Kecamatan Tanggul, Kabupaten Jember, Jawa Timur.</p>
+    <p>&copy; 2026 SMP Negeri 4 Tanggul. Seluruh hak cipta dilindungi.</p>
+  </div>
+</footer>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const menuLinks = document.querySelectorAll("nav a");
+
+  menuLinks.forEach(link => {
+    link.classList.remove("active");
+
+    if (link.getAttribute("href") === "galeri.html") {
+      link.classList.add("active");
+    }
+  });
+});
+</script>
+
+
+</body>
+</html>
