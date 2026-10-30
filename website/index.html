@@ -113,7 +113,7 @@
           dan berbagai informasi pendidikan di sini.
         </p>
 
-        <a href="#" class="hero-button">Mengenal Sekolah</a>
+        <a href="#profil" class="hero-button">Mengenal Sekolah</a>
       </div>
     </section>
 
@@ -348,29 +348,43 @@
 
         <div class="kontak-card">
 
-          <div class="kontak-item">
-            <h3>Alamat Sekolah</h3>
-            <p>
-              Jl. Kamboja No. 95, Tanggul Kulon,
-              Kecamatan Tanggul, Kabupaten Jember,
-              Provinsi Jawa Timur.
-            </p>
-          </div>
+          <div class="kontak-grid">
 
-          <div class="kontak-item">
-            <h3>Telepon</h3>
-            <p>
-              <a href="tel:033644113">033644113</a>
-            </p>
-          </div>
+            <div class="kontak-item">
+              <span class="kontak-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/>
+                  <circle cx="12" cy="10" r="2.5"/>
+                </svg>
+              </span>
+              <h3>Alamat Sekolah</h3>
+              <p>
+                Jl. Kamboja No. 95, Tanggul Kulon,
+                Kecamatan Tanggul, Kabupaten Jember,
+                Provinsi Jawa Timur.
+              </p>
+            </div>
 
-          <div class="kontak-item">
-            <h3>Email</h3>
-            <p>
-              <a href="mailto:smpn4tanggul.jember@gmail.com">
-                smpn4tanggul.jember@gmail.com
-              </a>
-            </p>
+            <div class="kontak-item">
+              <span class="kontak-icon">☎</span>
+              <h3>Telepon</h3>
+              <p>
+                <a href="tel:033644113">033644113</a>
+              </p>
+            </div>
+
+            <div class="kontak-item">
+              <span class="kontak-icon">✉</span>
+              <h3>Email</h3>
+              <p>
+                <a href="mailto:smpn4tanggul.jember@gmail.com">
+                  smpn4tanggul.jember@gmail.com
+                </a>
+              </p>
+            </div>
+
           </div>
 
           <a
@@ -452,9 +466,26 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+
+
 </script>
 
+<script type="module">
+  import { supabase } from './supabase.js';
 
+  async function tesKoneksiSupabase() {
+    const { error } = await supabase.auth.getSession();
+
+    if (error) {
+      console.error('Koneksi Supabase gagal:', error.message);
+    } else {
+      console.log('KONEKSI SUPABASE BERHASIL');
+    }
+  }
+
+  tesKoneksiSupabase();
+</script>
 
 
 

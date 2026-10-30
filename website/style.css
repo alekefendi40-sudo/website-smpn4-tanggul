@@ -216,7 +216,7 @@ nav a:hover {
 
 .profil-card {
   background: var(--surface);
-  border: 1px solid #26344b;
+  border: 1px solid #DCE2E6;
   border-radius: 14px;
   padding: 28px;
   transition: 0.3s;
@@ -1239,3 +1239,67 @@ footer {
     max-width: 100%;
   }
 }
+
+
+/* PENYEMPURNAAN TAMPILAN KONTAK */
+
+.kontak-card {
+  max-width: 100%;
+}
+
+.kontak-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.kontak-item {
+  background: #F4F7FA;
+  border: 1px solid #E3EAF0;
+  border-radius: 12px;
+  padding: 25px 20px;
+  text-align: center;
+  border-bottom: none;
+}
+
+.kontak-item:first-child {
+  padding-top: 25px;
+}
+
+.kontak-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: #E3F3FC;
+  color: #037FC5;
+  border-radius: 12px;
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.kontak-item h3 {
+  margin-bottom: 10px;
+}
+
+.kontak-item p {
+  overflow-wrap: anywhere;
+}
+
+.kontak-maps {
+  display: table;
+  margin: 28px auto 0;
+}
+
+/* RESPONSIVE KONTAK BARU */
+
+@media (max-width: 768px) {
+  .kontak-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+
