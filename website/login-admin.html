@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Pengelola - SMP Negeri 4 Tanggul</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <main class="login-admin">
+    <div class="login-card">
+
+      <img src="assets/logo-sekolah.png"
+           alt="Logo SMP Negeri 4 Tanggul"
+           class="login-logo">
+
+      <h1>Login Pengelola</h1>
+      <p>SMP Negeri 4 Tanggul</p>
+
+      <form id="formLoginAdmin">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          placeholder="Masukkan email"
+          required
+        >
+
+        <label for="password">Kata Sandi</label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Masukkan kata sandi"
+          required
+        >
+
+        <button type="submit" id="tombolLogin">
+          Masuk
+        </button>
+
+        <p id="pesanLogin"></p>
+      </form>
+
+      <a href="index.html" class="kembali-beranda">
+        Kembali ke Beranda
+      </a>
+
+    </div>
+  </main>
+
+  
+    <script type="module">
+    import { supabase } from './supabase.js';
+
+    const formLogin = document.getElementById('formLoginAdmin');
+    const tombolLogin = document.getElementById('tombolLogin');
+    const pesanLogin = document.getElementById('pesanLogin');
+
+    formLogin.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+
+        tombolLogin.disabled = true;
+        tombolLogin.textContent = 'Memeriksa...';
+        pesanLogin.textContent = '';
+
+        try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+
+        if (error) {
+            throw error;
+        }
+
+        
+      // Mengambil profil pengguna dari tabel profiles
+      const { data: profil, error: profilError } = await supabase
+        .from('profiles')
+        .select('nama_lengkap, peran')
+        .eq('id', data.user.id)
+        .single();
+
+      if (profilError || !profil) {
+        await supabase.auth.signOut();
+        throw new Error('Profil pengguna tidak ditemukan atau tidak dapat diakses.');
+      }
+
+      // Memeriksa peran pengguna
+      if (
+        profil.peran !== 'super_admin' &&
+        profil.peran !== 'admin_konten'
+      ) {
+        await supabase.auth.signOut();
+        throw new Error('Peran pengguna tidak memiliki akses ke halaman pengelola.');
+      }
+
+      // Menampilkan hasil pemeriksaan
+      pesanLogin.textContent =
+        'Login berhasil! Selamat datang, ' +
+        profil.nama_lengkap +
+        ' (' + profil.peran + ').';
+
+      pesanLogin.style.color = '#037FC5';
+
+        setTimeout(() => {
+            window.location.href = 'dashboard-admin.html';
+        }, 1000);
+        
+        } catch (error) {
+            console.error('Detail kesalahan login:', error);
+
+            pesanLogin.textContent = 'Login gagal: ' + error.message;
+            pesanLogin.style.color = '#D8241B';
+
+        } finally {
+        tombolLogin.disabled = false;
+        tombolLogin.textContent = 'Masuk';
+        }
+    });
+    </script>
+
+
+</body>
+</html>

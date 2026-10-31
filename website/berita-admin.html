@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Berita - SMP Negeri 4 Tanggul</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="dashboard-admin">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar-admin">
+            <div class="sidebar-brand">
+                <img src="assets/logo-sekolah.png" alt="Logo Sekolah">
+                <div>
+                    <h2>SMP Negeri 4 Tanggul</h2>
+                    <p>Panel Pengelola</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <a href="dashboard-admin.html">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="8" height="8" rx="2"/>
+                            <rect x="13" y="3" width="8" height="5" rx="2"/>
+                            <rect x="13" y="10" width="8" height="11" rx="2"/>
+                            <rect x="3" y="13" width="8" height="8" rx="2"/>
+                        </svg>
+                    </span>
+                    Dashboard
+                </a>
+
+                <a href="#" id="menuPengguna">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="9" cy="8" r="4"/>
+                            <path d="M2 21v-2a7 7 0 0 1 14 0v2"/>
+                            <path d="M16 4.5a4 4 0 0 1 0 7.5"/>
+                            <path d="M18 14a6 6 0 0 1 4 5.5V21"/>
+                        </svg>
+                    </span>
+                    Kelola Pengguna
+                </a>
+
+                <a href="#">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 10.5 12 3l9 7.5"/>
+                            <path d="M5 9.5V21h14V9.5"/>
+                            <path d="M9 21v-7h6v7"/>
+                        </svg>
+                    </span>
+                    Profil Sekolah
+                </a>
+
+                <a href="berita-admin.html" class="active">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="17" rx="2"/>
+                            <path d="M7 8h10M7 12h10M7 16h6"/>
+                        </svg>
+                    </span>
+                    Berita
+                </a>
+
+                <a href="#">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
+                            <path d="M10 21h4"/>
+                        </svg>
+                    </span>
+                    Pengumuman
+                </a>
+
+                <a href="#">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <path d="m21 15-5-5L5 21"/>
+                        </svg>
+                    </span>
+                    Galeri
+                </a>
+            </nav>
+
+            <button id="tombolLogout" class="logout-admin">
+                Keluar
+            </button>
+        </aside>
+
+        <!-- KONTEN UTAMA -->
+        <main class="dashboard-content">
+
+            <header class="dashboard-header">
+                <div class="header-info">
+                    <h1>Kelola Berita</h1>
+                    <p>Kelola berita Website SMP Negeri 4 Tanggul.</p>
+                </div>
+
+                <button class="btn-tambah-berita" id="tombolTambahBerita">
+                    + Tambah Berita
+                </button>
+            </header>
+
+            <!-- FORM TAMBAH BERITA -->
+            <section class="form-berita" id="formBerita" style="display: none;">
+
+                <div class="form-berita-header">
+                    <h2>Tambah Berita Baru</h2>
+                    <p>Isi informasi berita yang akan ditampilkan di website sekolah.</p>
+                </div>
+
+                <div class="form-berita-body">
+
+                    <div class="form-group-berita">
+                        <label for="judulBerita">Judul Berita</label>
+                        <input
+                            type="text"
+                            id="judulBerita"
+                            placeholder="Masukkan judul berita">
+                    </div>
+
+                    <div class="form-group-berita">
+                        <label for="slugBerita">Slug URL</label>
+                        <input
+                            type="text"
+                            id="slugBerita"
+                            placeholder="Slug akan dibuat otomatis"
+                            readonly>
+                        <small style="color: #718096;">
+                            Slug dibuat otomatis berdasarkan judul berita.
+                        </small>
+                    </div>
+
+                    <div class="form-group-berita">
+                        <label for="ringkasanBerita">Ringkasan Berita</label>
+                        <textarea
+                            id="ringkasanBerita"
+                            rows="3"
+                            placeholder="Tuliskan ringkasan singkat berita"></textarea>
+                    </div>
+
+                    <div class="form-group-berita">
+                        <label for="isiBerita">Isi Berita</label>
+                        <textarea
+                            id="isiBerita"
+                            rows="8"
+                            placeholder="Tuliskan isi berita secara lengkap"></textarea>
+                    </div>
+
+                    <div class="form-group-berita">
+                        <label for="gambarBerita">Gambar Berita</label>
+                        <input type="file" id="gambarBerita" accept="image/*">
+
+                        <div id="pratinjauGambar" style="display: none; margin-top: 15px;">
+                            <img
+                                id="gambarPreview"
+                                src=""
+                                alt="Pratinjau gambar berita"
+                                style="width: 100%; max-width: 350px; border-radius: 10px; border: 1px solid #D7E1EC;">
+
+                            <p style="font-size: 12px; color: #718096;">
+                                Pratinjau gambar berita
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-group-berita">
+                        <label for="statusBerita">Status Berita</label>
+                        <select id="statusBerita">
+                            <option value="draft">Simpan sebagai Draft</option>
+                            <option value="published">Terbitkan Berita</option>
+                        </select>
+                    </div>
+
+                    <div class="form-berita-actions">
+                        <button type="button" id="tombolBatalBerita">
+                            Batal
+                        </button>
+
+                        <button type="button" id="tombolSimpanBerita">
+                            Simpan Berita
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+
+    </div>
+
+    <script>
+        // Membuka formulir berita
+        const tombolTambahBerita =
+            document.getElementById('tombolTambahBerita');
+
+        const formBerita =
+            document.getElementById('formBerita');
+
+        const tombolBatalBerita =
+            document.getElementById('tombolBatalBerita');
+
+        tombolTambahBerita.addEventListener('click', function() {
+            formBerita.style.display = 'block';
+            tombolTambahBerita.style.display = 'none';
+
+            document.getElementById('judulBerita').focus();
+        });
+
+        // Menutup formulir berita
+        tombolBatalBerita.addEventListener('click', function() {
+            formBerita.style.display = 'none';
+            tombolTambahBerita.style.display = 'inline-flex';
+        });
+
+        // Membuat slug otomatis dari judul berita
+        const judulBerita = document.getElementById('judulBerita');
+        const slugBerita = document.getElementById('slugBerita');
+
+        judulBerita.addEventListener('input', function() {
+            let slug = judulBerita.value
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-');
+
+            slugBerita.value = slug;
+        });
+
+        // Pratinjau gambar berita
+        const gambarBerita = document.getElementById('gambarBerita');
+        const pratinjauGambar = document.getElementById('pratinjauGambar');
+        const gambarPreview = document.getElementById('gambarPreview');
+
+        let urlPratinjauGambar = null;
+
+        gambarBerita.addEventListener('change', function() {
+            const file = gambarBerita.files[0];
+
+            if (!file) {
+                pratinjauGambar.style.display = 'none';
+                return;
+            }
+
+            if (!file.type.startsWith('image/')) {
+                alert('Silakan pilih file gambar.');
+                gambarBerita.value = '';
+                pratinjauGambar.style.display = 'none';
+                return;
+            }
+
+            if (urlPratinjauGambar) {
+                URL.revokeObjectURL(urlPratinjauGambar);
+            }
+
+            urlPratinjauGambar = URL.createObjectURL(file);
+            gambarPreview.src = urlPratinjauGambar;
+            pratinjauGambar.style.display = 'block';
+        });
+        
+    </script>
+
+</body>
+</html>
