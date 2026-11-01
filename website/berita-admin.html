@@ -196,7 +196,72 @@
 
     </div>
 
-    <script>
+    <script type="module">
+        import { supabase } from './supabase.js';
+        // PEMERIKSAAN LOGIN DAN HAK AKSES
+        async function periksaAksesAdmin() {
+            const { data: sesi, error: sesiError } =
+                await supabase.auth.getSession();
+
+            if (sesiError || !sesi.session) {
+                window.location.href = 'login-admin.html';
+                return false;
+            }
+
+            const { data: profil, error: profilError } = await supabase
+                .from('profiles')
+                .select('nama_lengkap, peran')
+                .eq('id', sesi.session.user.id)
+                .single();
+
+            if (profilError || !profil) {
+                await supabase.auth.signOut();
+                window.location.href = 'login-admin.html';
+                return false;
+            }
+
+            if (
+                profil.peran !== 'super_admin' &&
+                profil.peran !== 'admin_konten'
+            ) {
+                await supabase.auth.signOut();
+                window.location.href = 'login-admin.html';
+                return false;
+            }
+
+            // Admin Konten tidak boleh melihat menu Kelola Pengguna
+            const menuPengguna = document.getElementById('menuPengguna');
+
+            if (profil.peran !== 'super_admin' && menuPengguna) {
+                menuPengguna.style.display = 'none';
+            }
+
+            return true;
+        }
+
+        // Jalankan pemeriksaan akses
+        periksaAksesAdmin();
+
+        // FUNGSI LOGOUT
+        const tombolLogout = document.getElementById('tombolLogout');
+
+        tombolLogout.addEventListener('click', async function() {
+            tombolLogout.disabled = true;
+            tombolLogout.textContent = 'Keluar...';
+
+            const { error } = await supabase.auth.signOut();
+
+            if (error) {
+                console.error('Gagal logout:', error);
+                alert('Logout gagal: ' + error.message);
+
+                tombolLogout.disabled = false;
+                tombolLogout.textContent = 'Keluar';
+                return;
+            }
+
+            window.location.href = 'login-admin.html';
+        });        
         // Membuka formulir berita
         const tombolTambahBerita =
             document.getElementById('tombolTambahBerita');
@@ -250,8 +315,15 @@
                 return;
             }
 
-            if (!file.type.startsWith('image/')) {
-                alert('Silakan pilih file gambar.');
+            if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+                alert('Format gambar harus JPG, PNG, atau WebP.');
+                gambarBerita.value = '';
+                pratinjauGambar.style.display = 'none';
+                return;
+            }
+
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Ukuran gambar maksimal 2 MB.');
                 gambarBerita.value = '';
                 pratinjauGambar.style.display = 'none';
                 return;
@@ -266,6 +338,134 @@
             pratinjauGambar.style.display = 'block';
         });
         
+
+        // FUNGSI SIMPAN BERITA
+        const tombolSimpanBerita =
+            document.getElementById('tombolSimpanBerita');
+
+        tombolSimpanBerita.addEventListener('click', async function() {
+
+            const judul = judulBerita.value.trim();
+            const slug = slugBerita.value.trim();
+            const ringkasan = document.getElementById('ringkasanBerita').value.trim();
+            const isi = document.getElementById('isiBerita').value.trim();
+            const status = document.getElementById('statusBerita').value;
+            const fileGambar = gambarBerita.files[0];
+
+            // Validasi formulir
+            if (!judul || !isi) {
+                alert('Judul dan isi berita wajib diisi.');
+                return;
+            }
+
+            tombolSimpanBerita.disabled = true;
+            tombolSimpanBerita.textContent = 'Menyimpan...';
+                let lokasiFileUpload = null;
+                let gambarBerhasilDiunggah = false;
+            try {
+
+                // Memastikan admin masih login
+                const { data: userData, error: userError } =
+                    await supabase.auth.getUser();
+
+                if (userError || !userData.user) {
+                    throw new Error('Sesi login tidak ditemukan. Silakan login kembali.');
+                }
+
+                let urlGambar = null;
+
+                // Upload gambar jika admin memilih gambar
+                if (fileGambar) {
+
+                    const namaFile =
+                        `${crypto.randomUUID()}.${fileGambar.name.split('.').pop().toLowerCase()}`;
+
+                    lokasiFileUpload = `berita/${namaFile}`;
+
+                    const { error: uploadError } = await supabase.storage
+                        .from('gambar-berita')
+                        .upload(lokasiFileUpload, fileGambar, {
+                            contentType: fileGambar.type,
+                            upsert: false
+                        });
+
+                    if (uploadError) {
+                        throw uploadError;
+                    }
+                    gambarBerhasilDiunggah = true;
+
+                    const { data: urlData } = supabase.storage
+                        .from('gambar-berita')
+                        .getPublicUrl(lokasiFileUpload);
+                    urlGambar = urlData.publicUrl;
+                }
+
+                // Menyimpan berita ke database
+                const { error: simpanError } = await supabase
+                    .from('berita')
+                    .insert({
+                        judul: judul,
+                        slug: slug,
+                        ringkasan: ringkasan || null,
+                        isi_berita: isi,
+                        gambar: urlGambar,
+                        status: status,
+                        created_by: userData.user.id,
+                        published_at: status === 'published'
+                            ? new Date().toISOString()
+                            : null
+                    });
+
+                if (simpanError) {
+                    throw simpanError;
+                }
+
+                alert('Berita berhasil disimpan.');
+
+                // Mengosongkan formulir setelah berhasil disimpan
+                judulBerita.value = '';
+                slugBerita.value = '';
+                document.getElementById('ringkasanBerita').value = '';
+                document.getElementById('isiBerita').value = '';
+                gambarBerita.value = '';
+                document.getElementById('statusBerita').value = 'draft';
+
+                slugBerita.value = '';
+
+                pratinjauGambar.style.display = 'none';
+                gambarPreview.src = '';
+
+                if (urlPratinjauGambar) {
+                    URL.revokeObjectURL(urlPratinjauGambar);
+                    urlPratinjauGambar = null;
+                }
+
+                } catch (error) {
+
+                    // Hapus gambar jika upload berhasil tetapi penyimpanan berita gagal
+                    if (gambarBerhasilDiunggah && lokasiFileUpload) {
+
+                        const { error: hapusGambarError } = await supabase.storage
+                            .from('gambar-berita')
+                            .remove([lokasiFileUpload]);
+
+                        if (hapusGambarError) {
+                            console.error('Gagal menghapus gambar:', hapusGambarError);
+                        }
+                    }
+
+                    console.error('Gagal menyimpan berita:', error);
+                    alert('Gagal menyimpan berita: ' + error.message);
+
+                } finally {
+
+                tombolSimpanBerita.disabled = false;
+                tombolSimpanBerita.textContent = 'Simpan Berita';
+
+            }
+
+        });
+
     </script>
 
 </body>
