@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Berita - SMP Negeri 4 Tanggul</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="dashboard-admin">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar-admin">
+            <div class="sidebar-brand">
+                <img src="assets/logo-sekolah.png" alt="Logo Sekolah">
+                <div>
+                    <h2>SMP Negeri 4 Tanggul</h2>
+                    <p>Panel Pengelola</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <a href="dashboard-admin.html">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="8" height="8" rx="2"/>
+                            <rect x="13" y="3" width="8" height="5" rx="2"/>
+                            <rect x="13" y="10" width="8" height="11" rx="2"/>
+                            <rect x="3" y="13" width="8" height="8" rx="2"/>
+                        </svg>
+                    </span>
+                    Dashboard
+                </a>
+
+                <a href="pengguna-admin.html" id="menuPengguna" hidden>
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="9" cy="8" r="4"/>
+                            <path d="M2 21v-2a7 7 0 0 1 14 0v2"/>
+                            <path d="M16 4.5a4 4 0 0 1 0 7.5"/>
+                            <path d="M18 14a6 6 0 0 1 4 5.5V21"/>
+                        </svg>
+                    </span>
+                    Kelola Pengguna
+                </a>
+
+                <a href="profil-admin.html">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 10.5 12 3l9 7.5"/>
+                            <path d="M5 9.5V21h14V9.5"/>
+                            <path d="M9 21v-7h6v7"/>
+                        </svg>
+                    </span>
+                    Profil Sekolah
+                </a>
+
+                <a href="berita-admin.html">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="17" rx="2"/>
+                            <path d="M7 8h10M7 12h10M7 16h6"/>
+                        </svg>
+                    </span>
+                    Berita
+                </a>
+
+                <a href="pengumuman-admin.html" class="active">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
+                            <path d="M10 21h4"/>
+                        </svg>
+                    </span>
+                    Pengumuman
+                </a>
+
+               <a href="galeri-admin.html">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <path d="m21 15-5-5L5 21"/>
+                        </svg>
+                    </span>
+                    Galeri
+                </a>
+            </nav>
+
+            <button id="tombolLogout" class="logout-admin">
+                Keluar
+            </button>
+        </aside>
+
+        <!-- KONTEN UTAMA -->
+
+
+        <main class="dashboard-content">
+
+            <!-- TOMBOL MENU HP -->
+            <button type="button" class="tombol-menu-mobile" id="tombolMenuMobile" aria-label="Buka menu">
+                ☰
+            </button>
+
+            <!-- LAPISAN PENUTUP SIDEBAR -->
+            <div class="overlay-sidebar" id="overlaySidebar"></div>
+
+            <!-- HEADER HALAMAN -->
+            <header class="dashboard-header">
+                <div class="header-info">
+                    <h1>Kelola Pengumuman</h1>
+                    <p>Kelola informasi dan pengumuman SMP Negeri 4 Tanggul.</p>
+                </div>
+            </header>
+
+            <!-- KONTEN PENGUMUMAN -->
+            <section class="daftar-berita">
+                <div class="daftar-berita-header">
+                    <div>
+                        <h2>Pengelolaan Pengumuman Sekolah</h2>
+                        <p>
+                            Halaman ini digunakan untuk mengelola pengumuman
+                            kegiatan, informasi, dan pemberitahuan kepada warga sekolah.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="padding: 25px; color: #B9CADD;">
+                    <p>Fitur pengelolaan pengumuman akan segera tersedia.</p>
+                </div>
+            </section>
+
+        </main>
+
+
+
+    </div>
+
+    
+<script type="module">
+    import { supabase } from './supabase.js';
+
+    // =====================================
+    // PEMERIKSAAN LOGIN DAN HAK AKSES
+    // =====================================
+
+    async function periksaAksesAdmin() {
+        const { data: sesi, error: sesiError } =
+            await supabase.auth.getSession();
+
+        if (sesiError || !sesi.session) {
+            window.location.href = 'login-admin.html';
+            return false;
+        }
+
+        const { data: profil, error: profilError } = await supabase
+            .from('profiles')
+            .select('nama_lengkap, peran')
+            .eq('id', sesi.session.user.id)
+            .single();
+
+        if (profilError || !profil) {
+            await supabase.auth.signOut();
+            window.location.href = 'login-admin.html';
+            return false;
+        }
+
+        if (
+            profil.peran !== 'super_admin' &&
+            profil.peran !== 'admin_konten'
+        ) {
+            await supabase.auth.signOut();
+            window.location.href = 'login-admin.html';
+            return false;
+        }
+
+        // Admin Konten tidak boleh melihat menu Kelola Pengguna
+        const menuPengguna = document.getElementById('menuPengguna');
+
+        if (menuPengguna) {
+            menuPengguna.hidden = profil.peran !== 'super_admin';
+        }
+
+        return true;
+    }
+
+    // Jalankan pemeriksaan akses
+    const aksesDiizinkan = await periksaAksesAdmin();
+
+    // =====================================
+    // FUNGSI LOGOUT
+    // =====================================
+
+    if (aksesDiizinkan) {
+        const tombolLogout = document.getElementById('tombolLogout');
+
+        tombolLogout.addEventListener('click', async function() {
+            tombolLogout.disabled = true;
+            tombolLogout.textContent = 'Keluar...';
+
+            const { error } = await supabase.auth.signOut();
+
+            if (error) {
+                console.error('Gagal logout:', error);
+                alert('Logout gagal: ' + error.message);
+
+                tombolLogout.disabled = false;
+                tombolLogout.textContent = 'Keluar';
+                return;
+            }
+
+            window.location.href = 'login-admin.html';
+        });
+    }
+
+    // =====================================
+    // MENU SIDEBAR MOBILE
+    // =====================================
+
+    const sidebarAdmin = document.querySelector('.sidebar-admin');
+    const tombolMenuMobile = document.getElementById('tombolMenuMobile');
+    const overlaySidebar = document.getElementById('overlaySidebar');
+
+    function bukaSidebarMobile() {
+        sidebarAdmin.classList.add('terbuka');
+        overlaySidebar.classList.add('aktif');
+    }
+
+    function tutupSidebarMobile() {
+        sidebarAdmin.classList.remove('terbuka');
+        overlaySidebar.classList.remove('aktif');
+    }
+
+    tombolMenuMobile.addEventListener('click', bukaSidebarMobile);
+
+    overlaySidebar.addEventListener('click', tutupSidebarMobile);
+
+    document.querySelectorAll('.sidebar-menu a').forEach(function(menu) {
+        menu.addEventListener('click', tutupSidebarMobile);
+    });
+
+</script>
+
+
+
+</body>
+</html>

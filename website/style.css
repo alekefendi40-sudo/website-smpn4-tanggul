@@ -512,19 +512,22 @@ footer p {
 .berita-gambar {
   width: 100%;
   height: 210px;
-  overflow: hidden;
   background: #EAF5FC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .berita-gambar img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s;
+  object-fit: contain !important;
+  object-position: center;
+  transition: none;
 }
 
 .berita-card:hover .berita-gambar img {
-  transform: scale(1.05);
+  transform: none;
 }
 
 .berita-content {
@@ -1422,8 +1425,6 @@ footer {
   background: #F0F5FA;
 }
 
-
-
 .sidebar-brand {
   display: flex;
   align-items: center;
@@ -1591,29 +1592,54 @@ footer {
   line-height: 1.7;
 }
 
+
+/* =================================
+   SIDEBAR RESPONSIF UNTUK HP
+================================= */
+
 @media (max-width: 768px) {
-  .dashboard-admin {
-    flex-direction: column;
-  }
 
-  .sidebar-admin {
-    width: 100%;
-    min-height: auto;
-  }
+    .dashboard-admin {
+        display: block;
+        min-height: 100vh;
+    }
 
-  .sidebar-menu {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-  }
+    .sidebar-admin {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        max-width: 85vw;
+        height: 100vh;
+        min-height: 100vh;
+        overflow-y: auto;
+        z-index: 1001;
 
-  .logout-admin {
-    margin-top: 20px;
-  }
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
 
-  .dashboard-content {
-    padding: 25px 20px;
-  }
+    .sidebar-admin.terbuka {
+        transform: translateX(0);
+    }
+
+    .dashboard-content {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 25px 20px;
+    }
+
+    .sidebar-menu {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .logout-admin {
+        margin-top: auto;
+    }
 }
+
 
 /* IDENTITAS SEKOLAH DI SIDEBAR */
 .sidebar-brand {
@@ -3029,4 +3055,270 @@ footer {
     .form-berita-actions button {
         width: 100%;
     }
+}
+
+
+/* =================================
+   DARK THEME - DAFTAR BERITA
+================================= */
+
+.daftar-berita {
+    margin-top: 30px;
+    background: #1D3047;
+    border: 1px solid #344B64;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+}
+
+.daftar-berita-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 28px;
+    border-bottom: 1px solid #344B64;
+    background: #192C42;
+}
+
+.daftar-berita-header h2 {
+    margin: 0 0 7px;
+    color: #F1F5F9;
+    font-size: 20px;
+}
+
+.daftar-berita-header p {
+    margin: 0;
+    color: #A9B9CA;
+    font-size: 13px;
+}
+
+#kontenDaftarBerita {
+    padding: 25px 28px;
+    color: #B9CADD;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+    .daftar-berita-header {
+        padding: 20px;
+    }
+
+    #kontenDaftarBerita {
+        padding: 20px;
+    }
+}
+
+
+/* =================================
+   KARTU BERITA ADMIN
+================================= */
+
+.kartu-berita-admin {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+    margin-bottom: 18px;
+    background: #192C42;
+    border: 1px solid #344B64;
+    border-radius: 12px;
+    transition: border-color 0.2s ease;
+}
+
+.kartu-berita-admin:last-child {
+    margin-bottom: 0;
+}
+
+.kartu-berita-admin:hover {
+    border-color: #087FC1;
+}
+
+/* INFORMASI BERITA DI KIRI */
+.info-berita-admin {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* GAMBAR DI KANAN */
+.gambar-berita-admin {
+    width: 180px;
+    height: 125px;
+    object-fit: cover;
+    border-radius: 9px;
+    flex-shrink: 0;
+}
+
+.kartu-berita-admin h3 {
+    margin: 0;
+    color: #F1F5F9;
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+.kartu-berita-admin p {
+    margin: 0;
+    color: #B9CADD;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.status-berita-admin {
+    display: inline-block;
+    align-self: flex-start;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: rgba(8, 127, 193, 0.18);
+    color: #45B5F5;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.kartu-berita-admin small {
+    color: #8FA6BC;
+    font-size: 12px;
+}
+
+@media (max-width: 600px) {
+    .kartu-berita-admin {
+        gap: 12px;
+        padding: 15px;
+    }
+
+    .gambar-berita-admin {
+        width: 105px;
+        height: 90px;
+    }
+
+    .kartu-berita-admin h3 {
+        font-size: 15px;
+    }
+
+    .kartu-berita-admin p {
+        font-size: 12px;
+    }
+}
+
+/* =================================
+   TOMBOL HAMBURGER MOBILE
+================================= */
+
+/* Default: tidak tampil di desktop */
+.tombol-menu-mobile {
+    display: none;
+}
+
+.overlay-sidebar {
+    display: none;
+}
+
+@media (max-width: 768px) {
+
+    .tombol-menu-mobile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        margin-bottom: 20px;
+        border: 1px solid #344B64;
+        border-radius: 9px;
+        background: #1D3047;
+        color: #F1F5F9;
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    .tombol-menu-mobile:hover {
+        background: #087FC1;
+    }
+
+    .overlay-sidebar {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        background: rgba(0, 0, 0, 0.55);
+    }
+
+    .overlay-sidebar.aktif {
+        display: block;
+    }
+
+}
+
+/* =================================
+   PERBAIKAN POSISI KONTEN MOBILE
+================================= */
+
+@media (max-width: 768px) {
+
+    .dashboard-admin {
+        display: block;
+        width: 100%;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    .sidebar-admin {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 1001;
+    }
+
+    .dashboard-content {
+        display: block;
+        width: 100%;
+        min-height: 100vh;
+        margin: 0;
+        padding: 18px 16px 30px;
+        box-sizing: border-box;
+    }
+
+    .tombol-menu-mobile {
+        margin-top: 0;
+    }
+}
+
+/* Memastikan elemen dengan atribut hidden benar-benar disembunyikan */
+[hidden] {
+    display: none !important;
+}
+
+
+/* Tombol Edit Berita */
+.tombol-edit-berita {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 8px 15px;
+    border: 1px solid rgba(69, 181, 245, 0.35);
+    border-radius: 8px;
+    background: rgba(8, 127, 193, 0.15);
+    color: #45B5F5;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tombol-edit-berita:hover {
+    background: #087FC1;
+    color: #FFFFFF;
+    border-color: #087FC1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(8, 127, 193, 0.2);
+}
+
+.tombol-edit-berita i {
+    font-size: 12px;
 }
