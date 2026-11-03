@@ -4327,3 +4327,373 @@ footer {
   background: #D8241B;
 }
 
+
+/* =====================================
+   PROFIL SEKOLAH - DESAIN BARU
+===================================== */
+
+.profil {
+  padding: 75px 7%;
+  background: #F7FAFC;
+}
+
+.profil .section-heading {
+  margin-bottom: 45px;
+}
+
+.profil-container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* PEMBUKA PROFIL */
+/* PEMBUKA PROFIL */
+.profil-pembuka {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: #FFFFFF;
+  border: 1px solid #E3EAF0;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 6px 22px rgba(36, 32, 33, 0.04);
+}
+
+.profil-pembuka img {
+  width: 100%;
+  height: 450px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 13px;
+}
+
+.profil-pembuka h3 {
+  color: #037FC5;
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.profil-pembuka p {
+  color: #4D6478;
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+.profil-pembuka img {
+  width: 100%;
+  height: 550px;
+  object-fit: cover;
+  border-radius: 13px;
+}
+
+/* IDENTITAS SEKOLAH */
+.profil-identitas {
+  background: #FFFFFF;
+  border: 1px solid #E3EAF0;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 6px 22px rgba(36, 32, 33, 0.04);
+}
+
+.profil-identitas h3,
+.profil-sejarah h3,
+.profil-visi h3,
+.profil-misi h3 {
+  color: #037FC5;
+  font-size: 21px;
+  margin-bottom: 20px;
+}
+
+.profil-identitas-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.profil-identitas-grid p {
+  margin: 0;
+  padding: 13px 15px;
+  background: #F3F8FC;
+  border-radius: 10px;
+  color: #4D6478;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.profil-identitas-grid strong {
+  display: block;
+  color: #242021;
+  margin-bottom: 3px;
+}
+
+/* SEJARAH SEKOLAH */
+.profil-sejarah {
+  background: #FFFFFF;
+  border: 1px solid #E3EAF0;
+  border-radius: 18px;
+  padding: 30px;
+  box-shadow: 0 6px 22px rgba(36, 32, 33, 0.04);
+}
+
+.profil-sejarah p {
+  color: #4D6478;
+  font-size: 15px;
+  line-height: 1.9;
+  margin-bottom: 15px;
+}
+
+.profil-sejarah p:last-child {
+  margin-bottom: 0;
+}
+
+/* VISI DAN MISI */
+.profil-visi-misi {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 22px;
+}
+
+.profil-visi,
+.profil-misi {
+  background: #FFFFFF;
+  border: 1px solid #E3EAF0;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 6px 22px rgba(36, 32, 33, 0.04);
+}
+
+.profil-visi {
+  border-top: 4px solid #037FC5;
+}
+
+.profil-misi {
+  border-top: 4px solid #D8241B;
+}
+
+.profil-visi p {
+  color: #037FC5;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.8;
+}
+
+.profil-misi ol {
+  padding-left: 22px;
+  margin: 0;
+}
+
+.profil-misi li {
+  color: #4D6478;
+  font-size: 14px;
+  line-height: 1.8;
+  padding-left: 5px;
+  margin-bottom: 12px;
+}
+
+.profil-misi li:last-child {
+  margin-bottom: 0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .profil {
+    padding: 50px 20px;
+  }
+
+  .profil-pembuka {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+  .profil-pembuka img {
+    height: 210px;
+  }
+
+  .profil-identitas-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profil-visi-misi {
+    grid-template-columns: 1fr;
+  }
+
+  .profil-identitas,
+  .profil-sejarah,
+  .profil-visi,
+  .profil-misi {
+    padding: 22px;
+  }
+}
+
+
+/* =====================================
+   FORM PENGELOLAAN PROFIL SEKOLAH
+===================================== */
+
+.halaman-profil-admin {
+    background: #F4F7FB;
+    border: 1px solid #E3EAF2;
+}
+
+.halaman-profil-admin .daftar-berita-header {
+    background: #FFFFFF;
+    border-bottom: 1px solid #E3EAF2;
+}
+
+.halaman-profil-admin .daftar-berita-header h2 {
+    color: #102746;
+}
+
+.halaman-profil-admin .daftar-berita-header p {
+    color: #718096;
+}
+
+.halaman-profil-admin .form-berita {
+    margin: 24px;
+    padding: 30px;
+    background: #FFFFFF;
+    border: 1px solid #E3EAF2;
+    border-radius: 14px;
+    box-shadow: 0 5px 18px rgba(16, 39, 70, 0.05);
+}
+
+/* JUDUL SETIAP BAGIAN */
+
+#formProfilSekolah h3 {
+    margin: 10px 0 22px;
+    padding-bottom: 12px;
+    color: #102746;
+    font-size: 17px;
+    border-bottom: 2px solid #E8EEF5;
+}
+
+#formProfilSekolah hr {
+    margin: 30px 0;
+    border: 0;
+    border-top: 1px solid #E3EAF2;
+}
+
+/* SUSUNAN FORMULIR */
+
+#formProfilSekolah {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    row-gap: 4px;
+}
+
+#formProfilSekolah h3,
+#formProfilSekolah hr,
+#formProfilSekolah #statusSimpanProfil,
+#formProfilSekolah #tombolSimpanProfil {
+    grid-column: 1 / -1;
+}
+
+#formProfilSekolah .form-group {
+    margin-bottom: 18px;
+    min-width: 0;
+}
+
+#formProfilSekolah .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #263B53;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#formProfilSekolah input,
+#formProfilSekolah textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid #D7E1EC;
+    border-radius: 9px;
+    background: #FFFFFF;
+    color: #263B53;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s;
+}
+
+#formProfilSekolah input:focus,
+#formProfilSekolah textarea:focus {
+    border-color: #087FC5;
+    box-shadow: 0 0 0 3px rgba(8, 127, 197, 0.10);
+}
+
+#formProfilSekolah textarea {
+    resize: vertical;
+    line-height: 1.7;
+}
+
+/* BAGIAN YANG MEMERLUKAN LEBAR PENUH */
+
+#formProfilSekolah #alamat,
+#formProfilSekolah #sejarah,
+#formProfilSekolah #visi,
+#formProfilSekolah #misi {
+    min-height: 100px;
+}
+
+/* STATUS DAN TOMBOL */
+
+#statusSimpanProfil {
+    margin: 12px 0;
+    color: #52657A;
+    font-size: 13px;
+}
+
+#tombolSimpanProfil {
+    justify-self: start;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 9px;
+    background: #087FC5;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#tombolSimpanProfil:hover {
+    background: #066DA8;
+}
+
+/* TAMPILAN HP */
+
+@media (max-width: 700px) {
+    .halaman-profil-admin .form-berita {
+        margin: 14px;
+        padding: 20px;
+    }
+
+    #formProfilSekolah {
+        grid-template-columns: 1fr;
+    }
+
+    #formProfilSekolah h3,
+    #formProfilSekolah hr,
+    #formProfilSekolah #statusSimpanProfil,
+    #formProfilSekolah #tombolSimpanProfil {
+        grid-column: 1;
+    }
+
+    #tombolSimpanProfil {
+        width: 100%;
+    }
+}
+
+/* SEJARAH, VISI, DAN MISI MEMAKAI LEBAR PENUH */
+
+#formProfilSekolah .form-group:has(#sejarah),
+#formProfilSekolah .form-group:has(#visi),
+#formProfilSekolah .form-group:has(#misi) {
+    grid-column: 1 / -1;
+}
+

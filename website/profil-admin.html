@@ -124,7 +124,7 @@
             </header>
 
             <!-- KONTEN PROFIL SEKOLAH -->
-            <section class="daftar-berita">
+            <section class="daftar-berita halaman-profil-admin">
                 <div class="daftar-berita-header">
                     <div>
                         <h2>Pengelolaan Profil Sekolah</h2>
@@ -135,9 +135,100 @@
                     </div>
                 </div>
 
-                <div style="padding: 25px; color: #B9CADD;">
-                    <p>Fitur pengelolaan profil sekolah akan segera tersedia.</p>
+
+
+
+                <div class="form-berita">
+
+                    <form id="formProfilSekolah">
+
+                        <h3>Identitas Sekolah</h3>
+
+                        <div class="form-group">
+                            <label>Nama Sekolah</label>
+                            <input type="text" id="namaSekolah" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>NPSN</label>
+                            <input type="text" id="npsn">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Status Sekolah</label>
+                            <input type="text" id="statusSekolah">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Akreditasi</label>
+                            <input type="text" id="akreditasi">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tahun Berdiri</label>
+                            <input type="text" id="tahunBerdiri">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Kepala Sekolah</label>
+                            <input type="text" id="kepalaSekolah">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Alamat</label>
+                            <textarea id="alamat" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Telepon</label>
+                            <input type="text" id="telepon">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="email">
+                        </div>
+
+                        <hr>
+
+                        <h3>Sejarah Sekolah</h3>
+
+                        <div class="form-group">
+                            <label>Sejarah Singkat</label>
+                            <textarea id="sejarah" rows="8"></textarea>
+                        </div>
+
+                        <hr>
+
+                        <h3>Visi Sekolah</h3>
+
+                        <div class="form-group">
+                            <label>Visi</label>
+                            <textarea id="visi" rows="3"></textarea>
+                        </div>
+
+                        <hr>
+
+                        <h3>Misi Sekolah</h3>
+
+                        <div class="form-group">
+                            <label>
+                                Misi (satu poin untuk setiap baris)
+                            </label>
+                            <textarea id="misi" rows="12"></textarea>
+                        </div>
+
+                        <div id="statusSimpanProfil"></div>
+
+                        <button type="submit" id="tombolSimpanProfil">
+                            Simpan Perubahan
+                        </button>
+
+                    </form>
+
                 </div>
+
+
             </section>
 
         </main>
@@ -197,6 +288,108 @@
 
     // Jalankan pemeriksaan akses
     const aksesDiizinkan = await periksaAksesAdmin();
+
+
+    // =====================================
+    // MEMUAT DATA PROFIL SEKOLAH
+    // =====================================
+
+    async function muatProfilSekolah() {
+        const status = document.getElementById('statusSimpanProfil');
+
+        status.textContent = 'Memuat data profil sekolah...';
+
+        const { data, error } = await supabase
+            .from('profil_sekolah')
+            .select('*')
+            .eq('id', 1)
+            .single();
+
+        if (error) {
+            console.error('Gagal memuat profil:', error);
+            status.textContent = 'Gagal memuat data profil sekolah.';
+            return;
+        }
+
+        document.getElementById('namaSekolah').value = data.nama_sekolah || '';
+        document.getElementById('npsn').value = data.npsn || '';
+        document.getElementById('statusSekolah').value = data.status_sekolah || '';
+        document.getElementById('akreditasi').value = data.akreditasi || '';
+        document.getElementById('tahunBerdiri').value = data.tahun_berdiri || '';
+        document.getElementById('kepalaSekolah').value = data.kepala_sekolah || '';
+        document.getElementById('alamat').value = data.alamat || '';
+        document.getElementById('telepon').value = data.telepon || '';
+        document.getElementById('email').value = data.email || '';
+        document.getElementById('sejarah').value = data.sejarah || '';
+        document.getElementById('visi').value = data.visi || '';
+
+        const daftarMisi = Array.isArray(data.misi) ? data.misi : [];
+        document.getElementById('misi').value = daftarMisi.join('\n');
+
+        status.textContent = 'Data profil sekolah berhasil dimuat.';
+    }
+
+    
+    // =====================================
+    // MENYIMPAN PERUBAHAN PROFIL SEKOLAH
+    // =====================================
+
+    const formProfil = document.getElementById('formProfilSekolah');
+
+    if (aksesDiizinkan && formProfil) {
+        formProfil.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const tombolSimpan = document.getElementById('tombolSimpanProfil');
+            const status = document.getElementById('statusSimpanProfil');
+
+            tombolSimpan.disabled = true;
+            tombolSimpan.textContent = 'Menyimpan...';
+            status.textContent = 'Sedang menyimpan perubahan...';
+
+            const daftarMisi = document.getElementById('misi').value
+                .split('\n')
+                .map(item => item.trim())
+                .filter(item => item !== '');
+
+            const dataProfil = {
+                nama_sekolah: document.getElementById('namaSekolah').value.trim(),
+                npsn: document.getElementById('npsn').value.trim(),
+                status_sekolah: document.getElementById('statusSekolah').value.trim(),
+                akreditasi: document.getElementById('akreditasi').value.trim(),
+                tahun_berdiri: document.getElementById('tahunBerdiri').value.trim(),
+                kepala_sekolah: document.getElementById('kepalaSekolah').value.trim(),
+                alamat: document.getElementById('alamat').value.trim(),
+                telepon: document.getElementById('telepon').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                sejarah: document.getElementById('sejarah').value.trim(),
+                visi: document.getElementById('visi').value.trim(),
+                misi: daftarMisi,
+                updated_at: new Date().toISOString()
+            };
+
+            const { error } = await supabase
+                .from('profil_sekolah')
+                .update(dataProfil)
+                .eq('id', 1);
+
+            if (error) {
+                console.error('Gagal menyimpan profil:', error);
+                status.textContent = 'Gagal menyimpan: ' + error.message;
+            } else {
+                status.textContent = 'Perubahan profil sekolah berhasil disimpan.';
+            }
+
+            tombolSimpan.disabled = false;
+            tombolSimpan.textContent = 'Simpan Perubahan';
+        });
+    }
+
+
+    // Jalankan jika hak akses admin diizinkan
+    if (aksesDiizinkan) {
+        await muatProfilSekolah();
+    }
 
     // =====================================
     // FUNGSI LOGOUT

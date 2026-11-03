@@ -127,6 +127,8 @@
 
     </section>
 
+
+    
     <!-- PROFIL SEKOLAH -->
     <section class="profil" id="profil">
 
@@ -138,23 +140,53 @@
 
       <div class="profil-container">
 
+        <!-- PEMBUKA PROFIL -->
+        <div class="profil-pembuka">
+          <div>
+            <h3>Membangun Generasi Masa Depan</h3>
+            <p>
+              SMP Negeri 4 Tanggul berkomitmen menyelenggarakan
+              pendidikan yang berkualitas serta mengembangkan
+              potensi peserta didik agar menjadi generasi yang
+              berkarakter Pancasila, literat, dan berprestasi.
+            </p>
+          </div>
+
+          <img
+            id="profilFotoSekolah"
+            src="assets/foto-gedung-sekolah.jpg"
+            alt="Gedung SMP Negeri 4 Tanggul"
+          >
+        </div>
+
         <!-- IDENTITAS SEKOLAH -->
         <div class="profil-identitas">
           <h3>Identitas Sekolah</h3>
 
-          <p><strong>Nama Sekolah:</strong> SMP Negeri 4 Tanggul</p>
-          <p><strong>Alamat:</strong> [Isi alamat sekolah]</p>
-          <p><strong>NPSN:</strong> [Isi NPSN sekolah]</p>
-          <p><strong>Status:</strong> Negeri</p>
+          
+          <div class="profil-identitas-grid">
+            <p><strong>Nama Sekolah</strong><span id="profilNamaSekolah"></span></p>
+            <p><strong>NPSN</strong><span id="profilNpsn"></span></p>
+            <p><strong>Status</strong><span id="profilStatus"></span></p>
+            <p><strong>Akreditasi</strong><span id="profilAkreditasi"></span></p>
+            <p><strong>Tahun Berdiri</strong><span id="profilTahunBerdiri"></span></p>
+            <p><strong>Kepala Sekolah</strong><span id="profilKepalaSekolah"></span></p>
+            <p><strong>Telepon</strong><span id="profilTelepon"></span></p>
+            <p><strong>Email</strong><span id="profilEmail"></span></p>
+            <p>
+              <strong>Alamat</strong>
+              <span id="profilAlamat"></span>
+            </p>
+          </div>
+
         </div>
 
-        <!-- SEJARAH SINGKAT -->
+        <!-- SEJARAH SEKOLAH -->
         <div class="profil-sejarah">
           <h3>Sejarah Singkat</h3>
-          <p>
-            [Tuliskan sejarah singkat berdirinya SMP Negeri 4 Tanggul
-            dan perkembangannya hingga saat ini.]
-          </p>
+
+          <div id="profilSejarah"></div>
+        
         </div>
 
         <!-- VISI DAN MISI -->
@@ -162,12 +194,14 @@
 
           <div class="profil-visi">
             <h3>Visi Sekolah</h3>
-            <p>[Tuliskan visi resmi sekolah.]</p>
+            <p id="profilVisi"></p>
           </div>
 
           <div class="profil-misi">
             <h3>Misi Sekolah</h3>
-            <p>[Tuliskan misi resmi sekolah.]</p>
+
+            <ol id="profilMisi"></ol>
+
           </div>
 
         </div>
@@ -175,6 +209,8 @@
       </div>
 
     </section>
+
+  
     
     <!-- AKHIR PROFIL SEKOLAH -->
 
@@ -568,6 +604,89 @@ document.addEventListener("DOMContentLoaded", function () {
     `).join('');
   }
 
+
+  // =====================================
+  // MEMUAT PROFIL SEKOLAH
+  // =====================================
+
+  async function muatProfilSekolah() {
+    const { data, error } = await supabase
+      .from('profil_sekolah')
+      .select('*')
+      .eq('id', 1)
+      .single();
+
+    if (error) {
+      console.error('Gagal memuat profil sekolah:', error);
+      return;
+    }
+
+    if (!data) return;
+
+    // IDENTITAS SEKOLAH
+    document.getElementById('profilNamaSekolah').textContent =
+      data.nama_sekolah || '-';
+
+    document.getElementById('profilNpsn').textContent =
+      data.npsn || '-';
+
+    document.getElementById('profilStatus').textContent =
+      data.status_sekolah || '-';
+
+    document.getElementById('profilAkreditasi').textContent =
+      data.akreditasi || '-';
+
+    document.getElementById('profilTahunBerdiri').textContent =
+      data.tahun_berdiri || '-';
+
+    document.getElementById('profilKepalaSekolah').textContent =
+      data.kepala_sekolah || '-';
+
+    document.getElementById('profilTelepon').textContent =
+      data.telepon || '-';
+
+    document.getElementById('profilEmail').textContent =
+      data.email || '-';
+
+    document.getElementById('profilAlamat').textContent =
+      data.alamat || '-';
+
+    // SEJARAH SEKOLAH
+    const bagianSejarah = document.getElementById('profilSejarah');
+
+    bagianSejarah.replaceChildren();
+
+    const paragrafSejarah = (data.sejarah || '')
+      .split(/\n\s*\n/)
+      .map(teks => teks.trim())
+      .filter(teks => teks !== '');
+
+    paragrafSejarah.forEach(teks => {
+      const paragraf = document.createElement('p');
+      paragraf.textContent = teks;
+      bagianSejarah.appendChild(paragraf);
+    });
+
+    // VISI SEKOLAH
+    document.getElementById('profilVisi').textContent =
+      data.visi || '-';
+
+    // MISI SEKOLAH
+    const daftarMisi = document.getElementById('profilMisi');
+
+    daftarMisi.replaceChildren();
+
+    const misiSekolah = Array.isArray(data.misi) ? data.misi : [];
+
+    misiSekolah.forEach(teks => {
+      const item = document.createElement('li');
+      item.textContent = teks;
+      daftarMisi.appendChild(item);
+    });
+  }
+
+  // PANGGIL FUNGSI PEMUATAN
+  muatProfilSekolah();
   muatBerita();
   muatPengumuman();
 </script>
