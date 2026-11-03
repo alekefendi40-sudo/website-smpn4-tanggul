@@ -175,6 +175,7 @@
       </div>
 
     </section>
+    
     <!-- AKHIR PROFIL SEKOLAH -->
 
     <section class="berita" id="berita">
@@ -185,53 +186,18 @@
         <p>Berbagai kegiatan, informasi, dan prestasi SMP Negeri 4 Tanggul.</p>
       </div>
 
-      <div class="berita-list">
+      <div class="berita-list" id="berita-list">
 
-        <article class="berita-card">
-          <div class="berita-gambar">
-            <img src="https://placehold.co/600x400/037FC5/FFFFFF?text=Kegiatan+Sekolah"
-                alt="Kegiatan sekolah">
-          </div>
-          <div class="berita-content">
-            <span class="berita-kategori">KEGIATAN SEKOLAH</span>
-            <h3>Kegiatan dan Aktivitas Siswa</h3>
-            <p>
-              Dokumentasi berbagai kegiatan pembelajaran
-              dan aktivitas siswa di lingkungan sekolah.
-            </p>
-          </div>
-        </article>
+        <p class="berita-loading">
+          Memuat berita...
+        </p>
 
-        <article class="berita-card">
-          <div class="berita-gambar">
-            <img src="https://placehold.co/600x400/4D6478/FFFFFF?text=Prestasi+Siswa"
-                alt="Prestasi siswa">
-          </div>
-          <div class="berita-content">
-            <span class="berita-kategori">PRESTASI</span>
-            <h3>Prestasi dan Pencapaian Siswa</h3>
-            <p>
-              Informasi tentang prestasi dan pencapaian
-              siswa SMP Negeri 4 Tanggul.
-            </p>
-          </div>
-        </article>
-
-        <article class="berita-card">
-          <div class="berita-gambar">
-            <img src="https://placehold.co/600x400/D8241B/FFFFFF?text=Informasi+Sekolah"
-                alt="Informasi sekolah">
-          </div>
-          <div class="berita-content">
-            <span class="berita-kategori">INFORMASI</span>
-            <h3>Informasi dan Agenda Sekolah</h3>
-            <p>
-              Berbagai informasi dan agenda kegiatan
-              SMP Negeri 4 Tanggul.
-            </p>
-          </div>
-        </article>
-
+      </div>
+      
+      <div class="berita-semua">
+        <a href="arsip-berita.html" class="tombol-semua-berita">
+          Lihat Semua Berita
+        </a>
       </div>
 
     </section>
@@ -290,29 +256,14 @@
         <p>Informasi dan pemberitahuan terbaru dari sekolah.</p>
       </div>
 
-      <div class="pengumuman-list">
+      <div class="pengumuman-list" id="pengumuman-list">
+        <p>Memuat pengumuman...</p>
+      </div>
 
-        <article class="pengumuman-card penting">
-          <span class="pengumuman-label">PENGUMUMAN PENTING</span>
-          <h3>Informasi Penting Sekolah</h3>
-          <p>
-            Informasi penting dari sekolah akan ditampilkan
-            pada bagian ini agar mudah diketahui oleh siswa
-            dan orang tua.
-          </p>
-          <span class="pengumuman-tanggal">Contoh pengumuman</span>
-        </article>
-
-        <article class="pengumuman-card">
-          <span class="pengumuman-label">PENGUMUMAN</span>
-          <h3>Informasi Kegiatan Sekolah</h3>
-          <p>
-            Berbagai informasi kegiatan dan pemberitahuan
-            sekolah dapat dibaca melalui bagian ini.
-          </p>
-          <span class="pengumuman-tanggal">Contoh pengumuman</span>
-        </article>
-
+      <div class="pengumuman-semua">
+        <a href="arsip-pengumuman.html" class="tombol-semua-pengumuman">
+          Lihat Semua Pengumuman
+        </a>
       </div>
 
     </section>
@@ -498,17 +449,127 @@ document.addEventListener("DOMContentLoaded", function () {
 <script type="module">
   import { supabase } from './supabase.js';
 
-  async function tesKoneksiSupabase() {
-    const { error } = await supabase.auth.getSession();
+  async function muatBerita() {
+    const daftarBerita = document.getElementById('berita-list');
+
+    const { data, error } = await supabase
+      .from('berita')
+      .select('judul, slug, ringkasan, gambar, published_at')
+      .eq('status', 'published')
+      .order('published_at', { ascending: false })
+      .limit(3);
 
     if (error) {
-      console.error('Koneksi Supabase gagal:', error.message);
-    } else {
-      console.log('KONEKSI SUPABASE BERHASIL');
+      console.error('Gagal memuat berita:', error.message);
+      daftarBerita.innerHTML = `
+        <p>Berita belum dapat dimuat.</p>
+      `;
+      return;
     }
+
+    if (!data || data.length === 0) {
+      daftarBerita.innerHTML = `
+        <p>Belum ada berita yang diterbitkan.</p>
+      `;
+      return;
+    }
+
+    daftarBerita.innerHTML = data.map(berita => `
+      <a
+        href="detail-berita.html?slug=${encodeURIComponent(berita.slug)}"
+        class="berita-card berita-link"
+      >
+        <div class="berita-gambar">
+          <img
+            src="${berita.gambar || 'https://placehold.co/600x400/037FC5/FFFFFF?text=Berita+Sekolah'}"
+            alt="${berita.judul}"
+          >
+        </div>
+
+        <div class="berita-content">
+          <span class="berita-kategori">BERITA SEKOLAH</span>
+          <h3>${berita.judul}</h3>
+          <p>${berita.ringkasan || ''}</p>
+        </div>
+      </a>
+    `).join('');
   }
 
-  tesKoneksiSupabase();
+    // =====================================
+  // MEMUAT PENGUMUMAN BERANDA
+  // =====================================
+
+  async function muatPengumuman() {
+    const daftarPengumuman =
+      document.getElementById('pengumuman-list');
+
+    const hariIni = new Date().toLocaleDateString('en-CA', {
+      timeZone: 'Asia/Jakarta'
+    });
+
+    const { data, error } = await supabase
+      .from('pengumuman')
+      .select('judul, isi_pengumuman, jenis, tanggal_mulai, tanggal_berakhir')
+      .eq('status', 'aktif')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Gagal memuat pengumuman:', error.message);
+      daftarPengumuman.textContent =
+        'Pengumuman belum dapat dimuat.';
+      return;
+    }
+
+    const pengumumanAktif = (data || []).filter(item => {
+      const mulai = !item.tanggal_mulai ||
+        item.tanggal_mulai <= hariIni;
+
+      const belumBerakhir = !item.tanggal_berakhir ||
+        item.tanggal_berakhir >= hariIni;
+
+      return mulai && belumBerakhir;
+    });
+
+    // Pengumuman penting selalu berada di atas
+    pengumumanAktif.sort((a, b) => {
+      if (a.jenis === 'penting' && b.jenis !== 'penting') return -1;
+      if (a.jenis !== 'penting' && b.jenis === 'penting') return 1;
+      return 0;
+    });
+
+    const tampil = pengumumanAktif.slice(0, 4);
+
+    if (tampil.length === 0) {
+      daftarPengumuman.textContent =
+        'Belum ada pengumuman yang tersedia.';
+      return;
+    }
+
+    daftarPengumuman.innerHTML = tampil.map(item => `
+      <article class="pengumuman-card ${item.jenis === 'penting' ? 'penting' : ''}">
+        <span class="pengumuman-label">
+          ${item.jenis === 'penting' ? 'PENGUMUMAN PENTING' : 'PENGUMUMAN'}
+        </span>
+
+        <h3>${item.judul}</h3>
+
+        <p>${item.isi_pengumuman}</p>
+
+        <span class="pengumuman-tanggal">
+          ${item.tanggal_mulai
+            ? 'Mulai: ' + new Date(item.tanggal_mulai + 'T00:00:00').toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+              })
+            : 'Berlaku segera'}
+        </span>
+      </article>
+    `).join('');
+  }
+
+  muatBerita();
+  muatPengumuman();
 </script>
 
 

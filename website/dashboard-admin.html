@@ -46,6 +46,15 @@
                 </span>
                 Kelola Pengguna
             </a>
+            <script>
+                const peranTersimpan = sessionStorage.getItem('peranAdmin');
+
+                const menuPengguna = document.getElementById('menuPengguna');
+
+                if (menuPengguna && peranTersimpan === 'super_admin') {
+                    menuPengguna.hidden = false;
+                }
+            </script>
 
             <a href="profil-admin.html">
                 <span class="menu-icon">
@@ -181,6 +190,9 @@
                 await supabase.auth.signOut();
                 window.location.href = 'login-admin.html';
             } else {
+                
+                sessionStorage.setItem('peranAdmin', profil.peran);
+
                 document.getElementById('namaPengguna').textContent =
                 'Selamat datang, ' + profil.nama_lengkap;
 
@@ -216,6 +228,9 @@
         tombolLogout.addEventListener('click', async function() {
             console.log('TES 3: Fungsi logout terpasang');
             tombolLogout.disabled = true;
+
+            sessionStorage.removeItem('peranAdmin');
+            
             tombolLogout.textContent = 'Keluar...';
 
             const { error } = await supabase.auth.signOut();

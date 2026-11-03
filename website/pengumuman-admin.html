@@ -46,6 +46,16 @@
                     Kelola Pengguna
                 </a>
 
+                <script>
+                    const peranTersimpan = sessionStorage.getItem('peranAdmin');
+
+                    const menuPengguna = document.getElementById('menuPengguna');
+
+                    if (menuPengguna && peranTersimpan === 'super_admin') {
+                        menuPengguna.hidden = false;
+                    }
+                </script>
+
                 <a href="profil-admin.html">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
@@ -115,28 +125,126 @@
                 </div>
             </header>
 
-            <!-- KONTEN PENGUMUMAN -->
-            <section class="daftar-berita">
-                <div class="daftar-berita-header">
-                    <div>
-                        <h2>Pengelolaan Pengumuman Sekolah</h2>
-                        <p>
-                            Halaman ini digunakan untuk mengelola pengumuman
-                            kegiatan, informasi, dan pemberitahuan kepada warga sekolah.
-                        </p>
-                    </div>
+
+    <!-- KONTEN PENGUMUMAN -->
+    <section class="daftar-berita" id="daftarPengumuman">
+
+        <div class="daftar-berita-header">
+            <div>
+                <h2>Pengelolaan Pengumuman Sekolah</h2>
+                <p>
+                    Kelola informasi kegiatan, pemberitahuan,
+                    dan pengumuman SMP Negeri 4 Tanggul.
+                </p>
+            </div>
+        </div>
+
+        <!-- TOMBOL TAMBAH -->
+        <div class="aksi-pengumuman">
+            <button type="button" id="tombolTambahPengumuman">
+                <i class="fas fa-plus"></i>
+                Tambah Pengumuman
+            </button>
+        </div>
+
+        <!-- FORMULIR PENGUMUMAN -->
+        <div id="formPengumuman" style="display: none;">
+
+            <h2 id="judulFormPengumuman">Tambah Pengumuman</h2>
+
+            <form id="formInputPengumuman">
+
+                <div class="form-group">
+                    <label for="judulPengumuman">
+                        Judul Pengumuman
+                    </label>
+                    <input
+                        type="text"
+                        id="judulPengumuman"
+                        placeholder="Masukkan judul pengumuman"
+                        required
+                    >
                 </div>
 
-                <div style="padding: 25px; color: #B9CADD;">
-                    <p>Fitur pengelolaan pengumuman akan segera tersedia.</p>
+                <div class="form-group">
+                    <label for="isiPengumuman">
+                        Isi Pengumuman
+                    </label>
+                    <textarea
+                        id="isiPengumuman"
+                        rows="7"
+                        placeholder="Tuliskan isi pengumuman..."
+                        required
+                    ></textarea>
                 </div>
-            </section>
 
-        </main>
+                <div class="form-group">
+                    <label for="jenisPengumuman">
+                        Jenis Pengumuman
+                    </label>
+                    <select id="jenisPengumuman" required>
+                        <option value="biasa">Pengumuman Biasa</option>
+                        <option value="penting">Pengumuman Penting</option>
+                    </select>
+                </div>
 
+                <div class="form-group">
+                    <label for="statusPengumuman">
+                        Status Pengumuman
+                    </label>
+                    <select id="statusPengumuman" required>
+                        <option value="aktif">Aktif</option>
+                        <option value="nonaktif">Nonaktif</option>
+                    </select>
+                </div>
 
+                <div class="form-group">
+                    <label for="tanggalMulai">
+                        Tanggal Mulai Penayangan
+                    </label>
+                    <input type="date" id="tanggalMulai">
+                </div>
 
-    </div>
+                <div class="form-group">
+                    <label for="tanggalBerakhir">
+                        Tanggal Berakhir Penayangan
+                    </label>
+                    <input type="date" id="tanggalBerakhir">
+                </div>
+
+                <div class="aksi-form-pengumuman">
+                    <button type="submit" id="tombolSimpanPengumuman">
+                        Simpan Pengumuman
+                    </button>
+
+                    <button type="button" id="tombolBatalPengumuman">
+                        Batal
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- DAFTAR PENGUMUMAN -->
+        <div class="daftar-pengumuman-admin">
+            <h2>Daftar Pengumuman</h2>
+
+            <div class="pencarian-pengumuman-admin">
+                <i class="fas fa-search"></i>
+                <input
+                    type="search"
+                    id="cariPengumuman"
+                    placeholder="Cari pengumuman berdasarkan judul..."
+                    autocomplete="off"
+                >
+            </div>
+
+            <div id="kontenDaftarPengumuman">
+                <p>Memuat daftar pengumuman...</p>
+            </div>
+        </div>
+
+    </section>
 
     
 <script type="module">
@@ -175,7 +283,9 @@
             window.location.href = 'login-admin.html';
             return false;
         }
-
+        
+        sessionStorage.setItem('peranAdmin', profil.peran);
+        
         // Admin Konten tidak boleh melihat menu Kelola Pengguna
         const menuPengguna = document.getElementById('menuPengguna');
 
@@ -198,6 +308,7 @@
 
         tombolLogout.addEventListener('click', async function() {
             tombolLogout.disabled = true;
+            sessionStorage.removeItem('peranAdmin');
             tombolLogout.textContent = 'Keluar...';
 
             const { error } = await supabase.auth.signOut();
@@ -240,6 +351,429 @@
     document.querySelectorAll('.sidebar-menu a').forEach(function(menu) {
         menu.addEventListener('click', tutupSidebarMobile);
     });
+
+    // =====================================
+    // FORM TAMBAH PENGUMUMAN
+    // =====================================
+
+    const tombolTambahPengumuman =
+        document.getElementById('tombolTambahPengumuman');
+
+    const formPengumuman =
+        document.getElementById('formPengumuman');
+
+    const tombolBatalPengumuman =
+        document.getElementById('tombolBatalPengumuman');
+
+    tombolTambahPengumuman.addEventListener('click', function() {
+        sedangEditId = null;
+
+        formInputPengumuman.reset();
+
+        document.getElementById('judulFormPengumuman').textContent =
+            'Tambah Pengumuman';
+
+        document.getElementById('tombolSimpanPengumuman').textContent =
+            'Simpan Pengumuman';
+
+        formPengumuman.style.display = 'block';
+
+        formPengumuman.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    });
+
+    tombolBatalPengumuman.addEventListener('click', function() {
+        sedangEditId = null;
+
+        formInputPengumuman.reset();
+
+        document.getElementById('judulFormPengumuman').textContent =
+            'Tambah Pengumuman';
+
+        document.getElementById('tombolSimpanPengumuman').textContent =
+            'Simpan Pengumuman';
+
+        formPengumuman.style.display = 'none';
+    });
+
+        // =====================================
+    // SIMPAN PENGUMUMAN KE SUPABASE
+    // =====================================
+
+    const formInputPengumuman =
+        document.getElementById('formInputPengumuman');
+
+    formInputPengumuman.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const tombolSimpan =
+            document.getElementById('tombolSimpanPengumuman');
+
+        // Ambil data formulir
+        const dataPengumuman = {
+            judul: document.getElementById('judulPengumuman').value.trim(),
+            isi_pengumuman: document.getElementById('isiPengumuman').value.trim(),
+            jenis: document.getElementById('jenisPengumuman').value,
+            status: document.getElementById('statusPengumuman').value,
+            tanggal_mulai: document.getElementById('tanggalMulai').value || null,
+            tanggal_berakhir: document.getElementById('tanggalBerakhir').value || null
+        };
+
+        // Validasi tanggal
+        if (
+            dataPengumuman.tanggal_mulai &&
+            dataPengumuman.tanggal_berakhir &&
+            dataPengumuman.tanggal_berakhir < dataPengumuman.tanggal_mulai
+        ) {
+            alert('Tanggal berakhir tidak boleh lebih awal dari tanggal mulai.');
+            return;
+        }
+
+        tombolSimpan.disabled = true;
+        tombolSimpan.textContent = 'Menyimpan...';
+
+        try {
+            if (sedangEditId) {
+                // Memperbarui pengumuman yang sudah ada
+                const { error } = await supabase
+                    .from('pengumuman')
+                    .update({
+                        ...dataPengumuman,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', sedangEditId);
+
+                if (error) {
+                    throw error;
+                }
+
+                alert('Pengumuman berhasil diperbarui.');
+
+            } else {
+                // Menyimpan pengumuman baru
+                const { error } = await supabase
+                    .from('pengumuman')
+                    .insert([dataPengumuman]);
+
+                if (error) {
+                    throw error;
+                }
+
+                alert('Pengumuman berhasil disimpan.');
+            }
+
+            sedangEditId = null;
+
+            document.getElementById('judulFormPengumuman').textContent =
+                'Tambah Pengumuman';
+
+            document.getElementById('tombolSimpanPengumuman').textContent =
+                'Simpan Pengumuman';
+            
+            formInputPengumuman.reset();
+            formPengumuman.style.display = 'none';
+
+            await muatDaftarPengumuman();
+
+        } catch (error) {
+            console.error('Gagal menyimpan pengumuman:', error);
+            alert('Pengumuman gagal disimpan: ' + error.message);
+
+        } finally {
+            tombolSimpan.disabled = false;
+            tombolSimpan.textContent = 'Simpan Pengumuman';
+        }
+    });
+
+
+
+    // =====================================
+    // MEMUAT DAFTAR PENGUMUMAN
+    // =====================================
+
+    
+    // =====================================
+    // DATA PENGUMUMAN
+    // =====================================
+
+    let semuaPengumuman = [];
+       
+    // Menyimpan ID pengumuman yang sedang diedit
+    let sedangEditId = null;
+
+    // =====================================
+    // MEMUAT DAFTAR PENGUMUMAN
+    // =====================================
+
+    async function muatDaftarPengumuman() {
+        const kontainer =
+            document.getElementById('kontenDaftarPengumuman');
+
+        kontainer.innerHTML = '<p>Memuat daftar pengumuman...</p>';
+
+        try {
+            const { data, error } = await supabase
+                .from('pengumuman')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                throw error;
+            }
+
+            semuaPengumuman = data || [];
+
+            tampilkanDaftarPengumuman(semuaPengumuman);
+
+        } catch (error) {
+            console.error('Gagal memuat pengumuman:', error);
+
+            kontainer.innerHTML =
+                '<p>Gagal memuat daftar pengumuman. Silakan muat ulang halaman.</p>';
+        }
+    }
+
+
+    // FORMAT TANGGAL INDONESIA
+    function formatTanggalPengumuman(tanggal) {
+        if (!tanggal) {
+            return 'Tidak ditentukan';
+        }
+
+        const bagianTanggal = tanggal.split('-');
+
+        const tanggalObjek = new Date(
+            Number(bagianTanggal[0]),
+            Number(bagianTanggal[1]) - 1,
+            Number(bagianTanggal[2])
+        );
+
+        return tanggalObjek.toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+    }
+
+    // =====================================
+    // MENAMPILKAN DAFTAR PENGUMUMAN
+    // =====================================
+
+    function tampilkanDaftarPengumuman(daftar) {
+        const kontainer =
+            document.getElementById('kontenDaftarPengumuman');
+
+        kontainer.innerHTML = '';
+
+        if (!daftar || daftar.length === 0) {
+            kontainer.innerHTML =
+                '<p>Belum ada pengumuman yang tersimpan.</p>';
+            return;
+        }
+
+        daftar.forEach(function(item) {
+            const kartu = document.createElement('div');
+            kartu.className = 'kartu-pengumuman-admin';
+
+            const judul = document.createElement('h3');
+            judul.textContent = item.judul;
+
+            const isi = document.createElement('p');
+            isi.className = 'isi-pengumuman-admin';
+            isi.textContent = item.isi_pengumuman;
+
+            const jenis = document.createElement('span');
+            
+            jenis.className = 'label-jenis-pengumuman';
+
+            if (item.jenis === 'penting') {
+                jenis.classList.add('penting');
+            }
+            
+            jenis.textContent =
+                item.jenis === 'penting'
+                    ? 'PENGUMUMAN PENTING'
+                    : 'PENGUMUMAN BIASA';
+
+            const status = document.createElement('span');
+            
+            status.className = 'label-status-pengumuman';
+
+            if (item.status === 'nonaktif') {
+                status.classList.add('nonaktif');
+            }            
+
+            status.textContent =
+                item.status === 'aktif' ? 'Aktif' : 'Nonaktif';
+
+            const tanggal = document.createElement('p');
+            tanggal.className = 'tanggal-pengumuman-admin';
+
+            const mulai = formatTanggalPengumuman(item.tanggal_mulai);
+            const berakhir = formatTanggalPengumuman(item.tanggal_berakhir);
+
+            tanggal.textContent =
+                'Mulai: ' + mulai + ' | Berakhir: ' + berakhir;
+
+            // HEADER KARTU
+            const header = document.createElement('div');
+            header.className = 'header-kartu-pengumuman';
+
+            header.appendChild(judul);
+            header.appendChild(status);
+
+            // ISI KARTU
+            const konten = document.createElement('div');
+            konten.className = 'konten-kartu-pengumuman';
+
+            konten.appendChild(isi);
+
+            // FOOTER KARTU
+            const footer = document.createElement('div');
+            footer.className = 'footer-kartu-pengumuman';
+
+            const informasi = document.createElement('div');
+            informasi.className = 'info-kartu-pengumuman';
+
+            informasi.appendChild(jenis);
+            informasi.appendChild(tanggal);
+
+            // Tombol aksi pengumuman
+            const aksi = document.createElement('div');
+            aksi.className = 'aksi-kartu-pengumuman';
+
+            const tombolEdit = document.createElement('button');
+            tombolEdit.type = 'button';
+            tombolEdit.className = 'tombol-edit-pengumuman';
+            tombolEdit.textContent = 'Edit';
+
+            tombolEdit.addEventListener('click', function() {
+                editPengumuman(item);
+            });
+
+            const tombolHapus = document.createElement('button');
+            tombolHapus.type = 'button';
+            tombolHapus.className = 'tombol-hapus-pengumuman';
+            tombolHapus.textContent = 'Hapus';
+
+            tombolHapus.addEventListener('click', function() {
+                hapusPengumuman(item.id);
+            });
+
+            aksi.appendChild(tombolEdit);
+            aksi.appendChild(tombolHapus);
+
+            // SUSUNAN AKHIR KARTU
+            footer.appendChild(informasi);
+            footer.appendChild(aksi);
+
+            kartu.appendChild(header);
+            kartu.appendChild(konten);
+            kartu.appendChild(footer);
+
+            kontainer.appendChild(kartu);
+
+            kontainer.appendChild(kartu);
+
+        });
+    }
+
+    // =====================================
+    // EDIT PENGUMUMAN
+    // =====================================
+
+    function editPengumuman(item) {
+        sedangEditId = item.id;
+
+        document.getElementById('judulFormPengumuman').textContent =
+            'Edit Pengumuman';
+
+        document.getElementById('judulPengumuman').value = item.judul;
+        document.getElementById('isiPengumuman').value =
+            item.isi_pengumuman;
+
+        document.getElementById('jenisPengumuman').value = item.jenis;
+        document.getElementById('statusPengumuman').value = item.status;
+
+        document.getElementById('tanggalMulai').value =
+            item.tanggal_mulai || '';
+
+        document.getElementById('tanggalBerakhir').value =
+            item.tanggal_berakhir || '';
+
+        document.getElementById('tombolSimpanPengumuman').textContent =
+            'Simpan Perubahan';
+
+        formPengumuman.style.display = 'block';
+
+        formPengumuman.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+
+    // HAPUS PENGUMUMAN
+    async function hapusPengumuman(id) {
+        const konfirmasi = confirm(
+            'Apakah Anda yakin ingin menghapus pengumuman ini? Data yang dihapus tidak dapat dikembalikan.'
+        );
+
+        if (!konfirmasi) {
+            return;
+        }
+
+        try {
+            const { error } = await supabase
+                .from('pengumuman')
+                .delete()
+                .eq('id', id);
+
+            if (error) {
+                throw error;
+            }
+
+            alert('Pengumuman berhasil dihapus.');
+
+            await muatDaftarPengumuman();
+
+        } catch (error) {
+            console.error('Gagal menghapus pengumuman:', error);
+            alert('Pengumuman gagal dihapus: ' + error.message);
+        }
+    }
+
+    // =====================================
+    // PENCARIAN PENGUMUMAN
+    // =====================================
+
+    const inputCariPengumuman =
+        document.getElementById('cariPengumuman');
+
+    inputCariPengumuman.addEventListener('input', function() {
+        const kataKunci = this.value.trim().toLowerCase();
+
+        const hasilPencarian = semuaPengumuman.filter(function(item) {
+            return item.judul.toLowerCase().includes(kataKunci);
+        });
+
+        if (hasilPencarian.length === 0 && kataKunci !== '') {
+            document.getElementById('kontenDaftarPengumuman').innerHTML =
+                '<p>Pengumuman yang dicari tidak ditemukan.</p>';
+            return;
+        }
+
+        tampilkanDaftarPengumuman(hasilPencarian);
+    });
+
+    // =====================================
+    // MUAT DAFTAR SAAT HALAMAN DIBUKA
+    // =====================================
+
+    if (aksesDiizinkan) {
+        muatDaftarPengumuman();
+    }
 
 </script>
 

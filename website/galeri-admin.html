@@ -45,6 +45,15 @@
                     </span>
                     Kelola Pengguna
                 </a>
+                <script>
+                    const peranTersimpan = sessionStorage.getItem('peranAdmin');
+
+                    const menuPengguna = document.getElementById('menuPengguna');
+
+                    if (menuPengguna && peranTersimpan === 'super_admin') {
+                        menuPengguna.hidden = false;
+                    }
+                </script>
 
                 <a href="profil-admin.html">
                     <span class="menu-icon">
@@ -176,6 +185,8 @@
             return false;
         }
 
+        sessionStorage.setItem('peranAdmin', profil.peran);
+
         // Admin Konten tidak boleh melihat menu Kelola Pengguna
         const menuPengguna = document.getElementById('menuPengguna');
 
@@ -198,6 +209,7 @@
 
         tombolLogout.addEventListener('click', async function() {
             tombolLogout.disabled = true;
+            sessionStorage.removeItem('peranAdmin');
             tombolLogout.textContent = 'Keluar...';
 
             const { error } = await supabase.auth.signOut();

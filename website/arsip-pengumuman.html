@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arsip Pengumuman - SMP Negeri 4 Tanggul</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <main class="arsip-pengumuman-container">
+
+    <div class="arsip-pengumuman-header">
+      <a href="index.html#pengumuman" class="arsip-pengumuman-kembali">
+        ← Kembali ke Beranda
+      </a>
+
+      <h1>Arsip Pengumuman</h1>
+      <p>
+        Informasi dan pemberitahuan resmi dari SMP Negeri 4 Tanggul.
+      </p>
+    </div>
+
+    <div id="arsip-pengumuman-list">
+      <p>Memuat pengumuman...</p>
+    </div>
+
+  </main>
+
+  <script type="module">
+    import { supabase } from './supabase.js';
+
+    async function muatArsipPengumuman() {
+      const daftar = document.getElementById('arsip-pengumuman-list');
+
+      const hariIni = new Date().toLocaleDateString('en-CA', {
+        timeZone: 'Asia/Jakarta'
+      });
+
+      const { data, error } = await supabase
+        .from('pengumuman')
+        .select('judul, isi_pengumuman, jenis, tanggal_mulai, tanggal_berakhir')
+        .eq('status', 'aktif')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Gagal memuat arsip:', error.message);
+        daftar.innerHTML = '<p>Arsip pengumuman belum dapat dimuat.</p>';
+        return;
+      }
+
+      const pengumumanAktif = (data || []).filter(item => {
+        const mulai = !item.tanggal_mulai ||
+          item.tanggal_mulai <= hariIni;
+
+        const belumBerakhir = !item.tanggal_berakhir ||
+          item.tanggal_berakhir >= hariIni;
+
+        return mulai && belumBerakhir;
+      });
+
+      pengumumanAktif.sort((a, b) => {
+        if (a.jenis === 'penting' && b.jenis !== 'penting') return -1;
+        if (a.jenis !== 'penting' && b.jenis === 'penting') return 1;
+        return 0;
+      });
+
+      if (pengumumanAktif.length === 0) {
+        daftar.innerHTML = '<p>Belum ada pengumuman yang tersedia.</p>';
+        return;
+      }
+
+      daftar.innerHTML = pengumumanAktif.map(item => `
+        <article class="pengumuman-card ${item.jenis === 'penting' ? 'penting' : ''}">
+          <span class="pengumuman-label">
+            ${item.jenis === 'penting' ? 'PENGUMUMAN PENTING' : 'PENGUMUMAN'}
+          </span>
+
+          <h3>${item.judul}</h3>
+
+          <p>${item.isi_pengumuman}</p>
+
+          <span class="pengumuman-tanggal">
+            ${item.tanggal_mulai
+              ? 'Mulai: ' + new Date(item.tanggal_mulai + 'T00:00:00').toLocaleDateString('id-ID', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric'
+                })
+              : 'Berlaku segera'}
+          </span>
+        </article>
+      `).join('');
+    }
+
+    muatArsipPengumuman();
+  </script>
+
+</body>
+</html>

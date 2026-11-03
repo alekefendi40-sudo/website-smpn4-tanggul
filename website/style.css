@@ -3148,10 +3148,13 @@ footer {
 /* GAMBAR DI KANAN */
 .gambar-berita-admin {
     width: 180px;
-    height: 125px;
-    object-fit: cover;
+    height: auto;
+    max-height: 125px;
+    object-fit: contain;
+    object-position: center;
     border-radius: 9px;
     flex-shrink: 0;
+    background: #101D2D;
 }
 
 .kartu-berita-admin h3 {
@@ -3186,23 +3189,51 @@ footer {
 }
 
 @media (max-width: 600px) {
+
     .kartu-berita-admin {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 12px;
         padding: 15px;
+        align-items: start;
     }
 
-    .gambar-berita-admin {
-        width: 105px;
-        height: 90px;
+    /* Informasi berita memenuhi lebar kartu */
+    .info-berita-admin {
+        grid-column: 1 / -1;
+        width: 100%;
+        min-width: 0;
     }
 
     .kartu-berita-admin h3 {
         font-size: 15px;
+        overflow-wrap: anywhere;
     }
 
     .kartu-berita-admin p {
         font-size: 12px;
+        overflow-wrap: anywhere;
     }
+
+    /* Gambar memenuhi baris tersendiri */
+    .gambar-berita-admin {
+        grid-column: 1 / -1;
+        width: 100%;
+        max-width: 100%;
+        height: 160px;
+        object-fit: contain;
+    }
+
+    /* Tombol Edit dan Hapus */
+    .tombol-edit-berita,
+    .tombol-hapus-berita {
+        width: 100%;
+        min-width: 0;
+        justify-content: center;
+        padding: 10px 6px;
+        font-size: 12px;
+    }
+
 }
 
 /* =================================
@@ -3322,3 +3353,977 @@ footer {
 .tombol-edit-berita i {
     font-size: 12px;
 }
+
+/* =====================================
+   KOTAK PENCARIAN BERITA ADMIN
+===================================== */
+
+.pencarian-berita-admin {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #1D3047;
+    border: 1px solid #344B64;
+    border-radius: 10px;
+    padding: 0 16px;
+    max-width: 480px;
+    height: 48px;
+    margin: 20px 30px 20px auto;
+    transition: all 0.25s ease;
+    justify-content: flex-start;
+}
+
+.pencarian-berita-admin i {
+    color: #8FAFCB;
+    font-size: 16px;
+}
+
+.pencarian-berita-admin input {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #F1F5F9;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.pencarian-berita-admin input::placeholder {
+    color: #8FAFCB;
+}
+
+.pencarian-berita-admin:focus-within {
+    border-color: #45B5F5;
+    box-shadow: 0 0 0 3px rgba(69, 181, 245, 0.12);
+}
+
+/* =====================================
+   TOMBOL HAPUS BERITA
+===================================== */
+
+.tombol-hapus-berita {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #8F2633;
+    color: #FFFFFF;
+    border: 1px solid #B83B49;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.tombol-hapus-berita:hover {
+    background: #B83242;
+    border-color: #D94B5A;
+    box-shadow: 0 4px 12px rgba(184, 50, 66, 0.25);
+    transform: translateY(-1px);
+}
+
+.tombol-hapus-berita:active {
+    transform: translateY(0);
+}
+
+
+/* =================================
+   FORM PENGELOLAAN PENGUMUMAN
+================================= */
+
+.aksi-pengumuman {
+    display: flex;
+    justify-content: flex-end;
+    padding: 22px 28px;
+}
+
+#tombolTambahPengumuman {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 9px;
+    background: #087FC1;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#tombolTambahPengumuman:hover {
+    background: #066BA5;
+}
+
+/* PANEL FORMULIR */
+
+#formPengumuman {
+    margin: 0 28px 28px;
+    padding: 26px;
+    background: #192C42;
+    border: 1px solid #344B64;
+    border-radius: 12px;
+}
+
+#judulFormPengumuman {
+    margin: 0 0 25px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid #344B64;
+    color: #F1F5F9;
+    font-size: 19px;
+}
+
+/* SUSUNAN KOLOM */
+
+#formInputPengumuman {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+#formInputPengumuman .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-width: 0;
+}
+
+/* JUDUL DAN ISI PENUH */
+
+#formInputPengumuman .form-group:nth-child(1),
+#formInputPengumuman .form-group:nth-child(2) {
+    grid-column: 1 / -1;
+}
+
+/* LABEL */
+
+#formInputPengumuman label {
+    color: #DCE6F0;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* INPUT, TEXTAREA, SELECT */
+
+#formInputPengumuman input,
+#formInputPengumuman textarea,
+#formInputPengumuman select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid #405873;
+    border-radius: 8px;
+    outline: none;
+    background: #142438;
+    color: #F1F5F9;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+#formInputPengumuman input:focus,
+#formInputPengumuman textarea:focus,
+#formInputPengumuman select:focus {
+    border-color: #45B5F5;
+}
+
+#formInputPengumuman textarea {
+    min-height: 150px;
+    resize: vertical;
+    line-height: 1.7;
+}
+
+#formInputPengumuman input::placeholder,
+#formInputPengumuman textarea::placeholder {
+    color: #8196AA;
+}
+
+/* TOMBOL FORMULIR */
+
+.aksi-form-pengumuman {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+#tombolSimpanPengumuman,
+#tombolBatalPengumuman {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#tombolSimpanPengumuman {
+    background: #087FC1;
+    color: #FFFFFF;
+}
+
+#tombolSimpanPengumuman:hover {
+    background: #066BA5;
+}
+
+#tombolBatalPengumuman {
+    background: #344B64;
+    color: #E2E8F0;
+}
+
+#tombolBatalPengumuman:hover {
+    background: #405873;
+}
+
+#tombolSimpanPengumuman:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* TAMPILAN HP */
+
+@media (max-width: 600px) {
+
+    .aksi-pengumuman {
+        padding: 18px 20px;
+    }
+
+    #tombolTambahPengumuman {
+        width: 100%;
+    }
+
+    #formPengumuman {
+        margin: 0 20px 22px;
+        padding: 20px 16px;
+    }
+
+    #formInputPengumuman {
+        grid-template-columns: 1fr;
+        gap: 17px;
+    }
+
+    #formInputPengumuman .form-group:nth-child(1),
+    #formInputPengumuman .form-group:nth-child(2),
+    .aksi-form-pengumuman {
+        grid-column: 1;
+    }
+
+    .aksi-form-pengumuman {
+        flex-direction: column;
+    }
+
+    #tombolSimpanPengumuman,
+    #tombolBatalPengumuman {
+        width: 100%;
+    }
+}
+
+
+/* =================================
+   DAFTAR PENGUMUMAN ADMIN
+================================= */
+
+.daftar-pengumuman-admin {
+    margin: 0 28px 28px;
+    padding: 25px;
+    background: #192C42;
+    border: 1px solid #344B64;
+    border-radius: 12px;
+}
+
+.daftar-pengumuman-admin > h2 {
+    margin: 0 0 20px;
+    color: #F1F5F9;
+    font-size: 19px;
+}
+
+/* PENCARIAN */
+
+.pencarian-pengumuman-admin {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 0 24px auto;
+    padding: 11px 14px;
+    box-sizing: border-box;
+    background: #142438;
+    border: 1px solid #405873;
+    border-radius: 8px;
+    color: #8FA6BC;
+}
+
+.pencarian-pengumuman-admin:focus-within {
+    border-color: #45B5F5;
+}
+
+.pencarian-pengumuman-admin input {
+    width: 100%;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #F1F5F9;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.pencarian-pengumuman-admin input::placeholder {
+    color: #8196AA;
+}
+
+/* AREA DAFTAR */
+
+#kontenDaftarPengumuman {
+    color: #B9CADD;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+#kontenDaftarPengumuman > p {
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+    color: #8FA6BC;
+    background: #142438;
+    border: 1px dashed #405873;
+    border-radius: 9px;
+}
+
+/* TAMPILAN HP */
+
+@media (max-width: 600px) {
+
+    .daftar-pengumuman-admin {
+        margin: 0 20px 22px;
+        padding: 20px 16px;
+    }
+
+    .daftar-pengumuman-admin > h2 {
+        font-size: 17px;
+    }
+
+    .pencarian-pengumuman-admin {
+        max-width: 100%;
+        margin-bottom: 18px;
+    }
+
+}
+
+
+
+/* =================================
+   KARTU PENGUMUMAN ADMIN
+================================= */
+
+.kartu-pengumuman-admin {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    background: #142438;
+    border: 1px solid #344B64;
+    border-radius: 10px;
+    transition: border-color 0.2s ease;
+}
+
+.kartu-pengumuman-admin:last-child {
+    margin-bottom: 0;
+}
+
+.kartu-pengumuman-admin:hover {
+    border-color: #087FC1;
+}
+
+.kartu-pengumuman-admin h3 {
+    margin: 0;
+    color: #F1F5F9;
+    font-size: 17px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.isi-pengumuman-admin {
+    margin: 12px 0;
+    color: #E2E8F0;
+    font-size: 14px;
+    line-height: 1.7;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+/* LABEL JENIS */
+
+.label-jenis-pengumuman {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 8px 8px 8px 0;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    background: #eaf4fc;
+    color: #037FC5;
+}
+.label-jenis-pengumuman.penting {
+    background: #fde8e7;
+    color: #D8241B;
+}
+
+.label-jenis-pengumuman {
+    background: rgba(209, 21, 117, 0.15);
+    color: #F18AB9;
+}
+
+.label-jenis-pengumuman:has(+ .label-status-pengumuman) {
+    margin-bottom: 0;
+}
+
+/* LABEL STATUS */
+
+.label-status-pengumuman {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 8px 0;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    background: #e5f5eb;
+    color: #198754;
+}
+
+.label-status-pengumuman.nonaktif {
+    background: #eeeeee;
+    color: #666666;
+}
+
+/* TANGGAL PENAYANGAN */
+
+.tanggal-pengumuman-admin {
+    margin: 0;
+    color: #8FA6BC;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* TAMPILAN HP */
+
+@media (max-width: 600px) {
+
+    .kartu-pengumuman-admin {
+        padding: 16px;
+        gap: 10px;
+    }
+
+    .kartu-pengumuman-admin h3 {
+        font-size: 15px;
+    }
+
+    .isi-pengumuman-admin {
+        font-size: 13px;
+    }
+
+}
+
+
+/* =================================
+   TOMBOL AKSI KARTU PENGUMUMAN
+================================= */
+
+.aksi-kartu-pengumuman {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-top: 8px;
+}
+
+.tombol-edit-pengumuman,
+.tombol-hapus-pengumuman {
+    padding: 9px 17px;
+    border: none;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.tombol-edit-pengumuman {
+    background: #087FC1;
+    color: #FFFFFF;
+}
+
+.tombol-edit-pengumuman:hover {
+    background: #066BA5;
+}
+
+.tombol-hapus-pengumuman {
+    background: rgba(220, 53, 69, 0.15);
+    color: #FF858F;
+}
+
+.tombol-hapus-pengumuman:hover {
+    background: rgba(220, 53, 69, 0.28);
+}
+
+@media (max-width: 600px) {
+    .aksi-kartu-pengumuman {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .tombol-edit-pengumuman,
+    .tombol-hapus-pengumuman {
+        width: 100%;
+    }
+}
+
+/* =================================
+   TATA LETAK BARU KARTU PENGUMUMAN
+================================= */
+
+/* HEADER: JUDUL DAN STATUS */
+
+.header-kartu-pengumuman {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+}
+
+.header-kartu-pengumuman h3 {
+    flex: 1;
+    min-width: 0;
+}
+
+.header-kartu-pengumuman .label-status-pengumuman {
+    flex-shrink: 0;
+    margin: 0;
+}
+
+/* KONTEN: ISI PENGUMUMAN */
+
+.konten-kartu-pengumuman {
+    width: 100%;
+}
+
+.konten-kartu-pengumuman .isi-pengumuman-admin {
+    margin: 0;
+}
+
+/* FOOTER: INFORMASI DAN TOMBOL */
+
+.footer-kartu-pengumuman {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    padding-top: 12px;
+    border-top: 1px solid #344B64;
+}
+
+.info-kartu-pengumuman {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    min-width: 0;
+}
+
+.info-kartu-pengumuman .label-jenis-pengumuman {
+    margin: 0;
+}
+
+.info-kartu-pengumuman .tanggal-pengumuman-admin {
+    margin: 0;
+}
+
+/* TOMBOL AKSI */
+
+.footer-kartu-pengumuman .aksi-kartu-pengumuman {
+    display: flex;
+    flex-shrink: 0;
+    gap: 8px;
+    width: auto;
+    margin: 0;
+}
+
+/* TAMPILAN HP */
+
+@media (max-width: 600px) {
+
+    .header-kartu-pengumuman {
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .footer-kartu-pengumuman {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .info-kartu-pengumuman {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .footer-kartu-pengumuman .aksi-kartu-pengumuman {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+    }
+
+    .footer-kartu-pengumuman .tombol-edit-pengumuman,
+    .footer-kartu-pengumuman .tombol-hapus-pengumuman {
+        width: 100%;
+    }
+}
+
+
+/* =================================
+   PERBAIKAN KARTU BERITA
+================================= */
+
+.berita-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.berita-link:hover {
+  text-decoration: none;
+}
+
+.berita-link h3,
+.berita-link p {
+  text-decoration: none;
+}
+
+.berita-link:hover h3 {
+  color: #037FC5;
+}
+
+
+/* =================================
+   HALAMAN DETAIL BERITA
+================================= */
+
+.detail-berita-container {
+  width: min(900px, 92%);
+  margin: 50px auto 80px;
+}
+
+.detail-berita-kembali {
+  display: inline-block;
+  margin-bottom: 30px;
+  color: #037FC5;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.detail-berita-kembali:hover {
+  text-decoration: underline;
+}
+
+#detail-berita {
+  background: #FFFFFF;
+  padding: 35px;
+  border-radius: 16px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.06);
+}
+
+#detail-berita h1 {
+  color: #242021;
+  font-size: clamp(26px, 4vw, 38px);
+  line-height: 1.3;
+  margin: 0 0 15px;
+}
+
+.detail-berita-tanggal {
+  color: #64748B;
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+.detail-berita-gambar {
+  display: block;
+  width: 100%;
+  max-height: 480px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 25px;
+}
+
+.detail-berita-ringkasan {
+  color: #4D6478;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.8;
+  margin-bottom: 25px;
+}
+
+.detail-berita-isi {
+  color: #374151;
+  font-size: 16px;
+  line-height: 1.9;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .detail-berita-container {
+    margin-top: 25px;
+  }
+
+  #detail-berita {
+    padding: 22px 18px;
+  }
+
+  .detail-berita-gambar {
+    max-height: 280px;
+  }
+}
+
+/* =================================
+   FORMAT ISI BERITA QUILL
+================================= */
+
+.detail-berita-isi {
+    color: #374151;
+    font-size: 16px;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+}
+
+.detail-berita-isi p {
+    margin: 0 0 18px;
+}
+
+.detail-berita-isi h2 {
+    color: #242021;
+    font-size: 25px;
+    line-height: 1.4;
+    margin: 30px 0 15px;
+}
+
+.detail-berita-isi h3 {
+    color: #242021;
+    font-size: 21px;
+    line-height: 1.4;
+    margin: 25px 0 12px;
+}
+
+.detail-berita-isi strong {
+    font-weight: 700;
+}
+
+.detail-berita-isi em {
+    font-style: italic;
+}
+
+.detail-berita-isi u {
+    text-decoration: underline;
+}
+
+.detail-berita-isi ol,
+.detail-berita-isi ul {
+    padding-left: 28px;
+    margin: 0 0 20px;
+}
+
+.detail-berita-isi li {
+    margin-bottom: 8px;
+}
+
+.detail-berita-isi a {
+    color: #037FC5;
+    text-decoration: underline;
+}
+
+.detail-berita-isi a:hover {
+    color: #D8241B;
+}
+
+/* Perataan teks isi berita */
+.detail-berita-isi .ql-align-center {
+    text-align: center;
+}
+
+.detail-berita-isi .ql-align-right {
+    text-align: right;
+}
+
+.detail-berita-isi .ql-align-justify {
+    text-align: justify;
+}
+
+/* HALAMAN ARSIP BERITA */
+
+.arsip-berita-container {
+  width: min(1100px, 92%);
+  margin: 50px auto 80px;
+}
+
+.arsip-berita-header {
+  margin-bottom: 35px;
+}
+
+.arsip-berita-header h1 {
+  color: #242021;
+  font-size: clamp(28px, 4vw, 38px);
+  margin: 0 0 10px;
+}
+
+.arsip-berita-header p {
+  color: #4D6478;
+  font-size: 16px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* TATA LETAK DAFTAR BERITA */
+#arsip-berita-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 25px;
+}
+
+#arsip-berita-list .berita-card {
+  height: 100%;
+}
+
+/* TOMBOL LIHAT SEMUA BERITA */
+.berita-semua {
+  text-align: center;
+  margin-top: 35px;
+}
+
+.tombol-semua-berita {
+  display: inline-block;
+  padding: 12px 26px;
+  background: #037FC5;
+  color: #FFFFFF;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.tombol-semua-berita:hover {
+  background: #D8241B;
+}
+
+@media (max-width: 800px) {
+  #arsip-berita-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 550px) {
+  .arsip-berita-container {
+    margin-top: 25px;
+  }
+
+  #arsip-berita-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* =====================================
+   ARSIP PENGUMUMAN
+===================================== */
+
+.arsip-pengumuman-container {
+  width: min(1100px, 92%);
+  margin: 50px auto 80px;
+}
+
+.arsip-pengumuman-header {
+  margin-bottom: 35px;
+}
+
+.arsip-pengumuman-kembali {
+  display: inline-block;
+  color: #037FC5;
+  text-decoration: none;
+  font-weight: 600;
+  margin-bottom: 22px;
+}
+
+.arsip-pengumuman-kembali:hover {
+  color: #D8241B;
+}
+
+.arsip-pengumuman-header h1 {
+  color: #242021;
+  font-size: clamp(28px, 4vw, 38px);
+  margin: 0 0 10px;
+}
+
+.arsip-pengumuman-header p {
+  color: #4D6478;
+  font-size: 16px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+#arsip-pengumuman-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 25px;
+}
+
+#arsip-pengumuman-list .pengumuman-card {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 700px) {
+  .arsip-pengumuman-container {
+    margin-top: 25px;
+  }
+
+  #arsip-pengumuman-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* TOMBOL ARSIP PENGUMUMAN */
+
+.pengumuman-semua {
+  text-align: center;
+  margin-top: 35px;
+}
+
+.tombol-semua-pengumuman {
+  display: inline-block;
+  padding: 12px 26px;
+  background: #037FC5;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.tombol-semua-pengumuman:hover {
+  background: #D8241B;
+}
+

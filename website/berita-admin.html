@@ -2,10 +2,13 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Berita - SMP Negeri 4 Tanggul</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet">
 </head>
 <body>
 
@@ -45,6 +48,15 @@
                     </span>
                     Kelola Pengguna
                 </a>
+                <script>
+                    const peranTersimpan = sessionStorage.getItem('peranAdmin');
+
+                    const menuPengguna = document.getElementById('menuPengguna');
+
+                    if (menuPengguna && peranTersimpan === 'super_admin') {
+                        menuPengguna.hidden = false;
+                    }
+                </script>
 
                 <a href="profil-admin.html">
                     <span class="menu-icon">
@@ -154,13 +166,13 @@
                             rows="3"
                             placeholder="Tuliskan ringkasan singkat berita"></textarea>
                     </div>
-
+                    
                     <div class="form-group-berita">
-                        <label for="isiBerita">Isi Berita</label>
-                        <textarea
-                            id="isiBerita"
-                            rows="8"
-                            placeholder="Tuliskan isi berita secara lengkap"></textarea>
+                        <label>Isi Berita</label>
+
+                        <div id="editorIsiBerita"></div>
+
+                        <textarea id="isiBerita" hidden></textarea>
                     </div>
 
                     <div class="form-group-berita">
@@ -211,6 +223,17 @@
                     </div>
                 </div>
 
+
+                <div class="pencarian-berita-admin">
+                    <i class="fas fa-search"></i>
+                    <input
+                        type="search"
+                        id="cariBerita"
+                        placeholder="Cari berita berdasarkan judul..."
+                        autocomplete="off"
+                    >
+                </div>
+
                 <div id="kontenDaftarBerita">
                     <p>Memuat daftar berita...</p>
                 </div>
@@ -223,6 +246,30 @@
 
     <script type="module">
         import { supabase } from './supabase.js';
+                // INISIALISASI QUILL EDITOR
+        const editorIsiBerita = new Quill('#editorIsiBerita', {
+            theme: 'snow',
+
+            placeholder: 'Tuliskan isi berita secara lengkap...',
+
+            modules: {
+                toolbar: [
+                    [{ 'header': [2, 3, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    [{ 'align': [false, 'center', 'right', 'justify'] }],
+                    ['link'],
+                    ['clean']
+                ]
+            }
+        });
+
+        const inputIsiBerita = document.getElementById('isiBerita');
+
+        // Menyinkronkan isi editor dengan textarea
+        editorIsiBerita.on('text-change', function() {
+            inputIsiBerita.value = editorIsiBerita.root.innerHTML;
+        });
         // PEMERIKSAAN LOGIN DAN HAK AKSES
         async function periksaAksesAdmin() {
             const { data: sesi, error: sesiError } =
@@ -254,6 +301,8 @@
                 return false;
             }
 
+            sessionStorage.setItem('peranAdmin', profil.peran);
+
             // Admin Konten tidak boleh melihat menu Kelola Pengguna
             const menuPengguna = document.getElementById('menuPengguna');
 
@@ -262,7 +311,7 @@
             }
             return true;
         }
-
+        
         // Jalankan pemeriksaan akses admin
         const aksesDiizinkan = await periksaAksesAdmin();
 
@@ -271,6 +320,7 @@
 
         tombolLogout.addEventListener('click', async function() {
             tombolLogout.disabled = true;
+            sessionStorage.removeItem('peranAdmin');
             tombolLogout.textContent = 'Keluar...';
 
             const { error } = await supabase.auth.signOut();
@@ -381,12 +431,12 @@
             const judul = judulBerita.value.trim();
             const slug = slugBerita.value.trim();
             const ringkasan = document.getElementById('ringkasanBerita').value.trim();
-            const isi = document.getElementById('isiBerita').value.trim();
+            const isi = editorIsiBerita.root.innerHTML.trim();
             const status = document.getElementById('statusBerita').value;
             const fileGambar = gambarBerita.files[0];
 
             // Validasi formulir
-            if (!judul || !isi) {
+            if (!judul || editorIsiBerita.getText().trim() === '') {
                 alert('Judul dan isi berita wajib diisi.');
                 return;
             }
@@ -514,7 +564,7 @@ console.log('PEMERIKSAAN HAPUS GAMBAR:', {
                 judulBerita.value = '';
                 slugBerita.value = '';
                 document.getElementById('ringkasanBerita').value = '';
-                document.getElementById('isiBerita').value = '';
+                editorIsiBerita.setText('');
                 gambarBerita.value = '';
                 document.getElementById('statusBerita').value = 'draft';
 
@@ -649,7 +699,9 @@ console.log('PEMERIKSAAN HAPUS GAMBAR:', {
                     document.getElementById('judulBerita').value = berita.judul;
                     document.getElementById('slugBerita').value = berita.slug;
                     document.getElementById('ringkasanBerita').value = berita.ringkasan || '';
-                    document.getElementById('isiBerita').value = berita.isi_berita;
+                    editorIsiBerita.clipboard.dangerouslyPasteHTML(
+                        berita.isi_berita || ''
+                    );
                     document.getElementById('statusBerita').value = berita.status;
 
                     // Menampilkan gambar lama jika tersedia
@@ -674,6 +726,75 @@ console.log('PEMERIKSAAN HAPUS GAMBAR:', {
 
                 kartu.appendChild(tombolEdit);
 
+                // Tombol Hapus Berita
+                const tombolHapus = document.createElement('button');
+                tombolHapus.type = 'button';
+                tombolHapus.innerHTML = '<i class="fas fa-trash"></i> Hapus';
+                tombolHapus.className = 'tombol-hapus-berita';
+
+                kartu.appendChild(tombolHapus);
+
+            tombolHapus.addEventListener('click', async function() {
+
+                const konfirmasi = confirm(
+                    'Apakah Anda yakin ingin menghapus berita "' +
+                    berita.judul + '"?'
+                );
+
+                if (!konfirmasi) {
+                    return;
+                }
+
+                tombolHapus.disabled = true;
+                tombolHapus.textContent = 'Menghapus...';
+
+                const { error: hapusBeritaError } = await supabase
+                    .from('berita')
+                    .delete()
+                    .eq('id', berita.id);
+
+                if (hapusBeritaError) {
+                    console.error('Gagal menghapus berita:', hapusBeritaError);
+                    alert('Gagal menghapus berita: ' + hapusBeritaError.message);
+
+                    tombolHapus.disabled = false;
+                    tombolHapus.innerHTML = '<i class="fas fa-trash"></i> Hapus';
+                    return;
+                }
+
+                // Menghapus gambar berita dari Supabase Storage
+                if (berita.gambar) {
+                    try {
+                        const penandaPath = '/storage/v1/object/public/gambar-berita/';
+                        const posisiPath = berita.gambar.indexOf(penandaPath);
+
+                        if (posisiPath !== -1) {
+                            const pathGambar = decodeURIComponent(
+                                berita.gambar.substring(
+                                    posisiPath + penandaPath.length
+                                )
+                            );
+
+                            const { error: hapusGambarError } = await supabase.storage
+                                .from('gambar-berita')
+                                .remove([pathGambar]);
+
+                            if (hapusGambarError) {
+                                console.error('Gagal menghapus gambar:', hapusGambarError);
+                                alert('Berita terhapus, tetapi gambar gagal dihapus dari Storage.');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Gagal memproses penghapusan gambar:', error);
+                    }
+                }
+
+                alert('Berita berhasil dihapus.');
+
+                await muatDaftarBerita();
+
+            });
+
                 kontenDaftarBerita.appendChild(kartu);
 
             });
@@ -685,6 +806,53 @@ console.log('PEMERIKSAAN HAPUS GAMBAR:', {
         if (aksesDiizinkan) {
             await muatDaftarBerita();
         }
+
+        // =====================================
+        // PENCARIAN BERITA
+        // =====================================
+
+        const inputCariBerita = document.getElementById('cariBerita');
+
+        inputCariBerita.addEventListener('input', function() {
+
+            const kataKunci = this.value.toLowerCase().trim();
+
+            const semuaKartu = document.querySelectorAll(
+                '#kontenDaftarBerita .kartu-berita-admin'
+            );
+
+            let jumlahDitemukan = 0;
+
+            semuaKartu.forEach(function(kartu) {
+
+                const judul = kartu.querySelector('h3').textContent.toLowerCase();
+
+                if (judul.includes(kataKunci)) {
+                    kartu.style.display = '';
+                    jumlahDitemukan++;
+                } else {
+                    kartu.style.display = 'none';
+                }
+
+            });
+
+            // Pesan jika berita tidak ditemukan
+            let pesanCari = document.getElementById('pesanHasilCari');
+
+            if (!pesanCari) {
+                pesanCari = document.createElement('p');
+                pesanCari.id = 'pesanHasilCari';
+                document.getElementById('kontenDaftarBerita').appendChild(pesanCari);
+            }
+
+            if (kataKunci !== '' && jumlahDitemukan === 0) {
+                pesanCari.textContent = 'Berita yang Anda cari tidak ditemukan.';
+                pesanCari.style.display = 'block';
+            } else {
+                pesanCari.style.display = 'none';
+            }
+
+        });
 
         // =====================================
         // MENU SIDEBAR MOBILE
@@ -714,7 +882,7 @@ console.log('PEMERIKSAAN HAPUS GAMBAR:', {
         });
 
     </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
 
 </body>
 </html>
