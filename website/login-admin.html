@@ -83,13 +83,25 @@
       // Mengambil profil pengguna dari tabel profiles
       const { data: profil, error: profilError } = await supabase
         .from('profiles')
-        .select('nama_lengkap, peran')
+        .select('nama_lengkap, peran, akun_aktif')
         .eq('id', data.user.id)
         .single();
+        
+console.log('ID PENGGUNA:', data.user.id);
+console.log('DATA PROFIL:', profil);
+console.log('STATUS AKUN:', profil?.akun_aktif);
+console.log('TIPE STATUS:', typeof profil?.akun_aktif);
 
       if (profilError || !profil) {
         await supabase.auth.signOut();
         throw new Error('Profil pengguna tidak ditemukan atau tidak dapat diakses.');
+      }
+      // Memeriksa status akun
+      if (profil.akun_aktif !== true) {
+          await supabase.auth.signOut();
+          throw new Error(
+              'Akun Anda sedang dinonaktifkan. Silakan hubungi Super Admin.'
+          );
       }
 
       // Memeriksa peran pengguna

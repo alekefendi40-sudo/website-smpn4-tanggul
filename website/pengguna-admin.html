@@ -57,6 +57,17 @@
                     Profil Sekolah
                 </a>
 
+                <a href="sambutan-admin.html">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 5h16v12H8l-4 3V5Z"/>
+                            <path d="M8 9h8M8 13h6"/>
+                        </svg>
+                    </span>
+                    Sambutan KS
+                </a>
+
+
                 <a href="berita-admin.html">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
@@ -127,9 +138,109 @@
                     </div>
                 </div>
 
-                <div style="padding: 25px; color: #B9CADD;">
-                    <p>Fitur pengelolaan pengguna akan segera tersedia.</p>
+
+                <div class="form-tambah-pengguna" style="padding:25px;">
+                    <h3 style="margin-bottom:8px;">Tambah Akun Pengguna</h3>
+                    <p style="color:#718096;margin-bottom:22px;">
+                        Buat akun administrator atau guru agar dapat masuk ke website sekolah.
+                    </p>
+
+                    <form id="formTambahPengguna">
+                        <div style="margin-bottom:16px;">
+                            <label for="namaPenggunaBaru">Nama Lengkap</label>
+                            <input
+                                type="text"
+                                id="namaPenggunaBaru"
+                                required
+                                placeholder="Masukkan nama lengkap"
+                                style="width:100%;padding:12px;margin-top:7px;"
+                            >
+                        </div>
+
+                        <div style="margin-bottom:16px;">
+                            <label for="emailPenggunaBaru">Email</label>
+                            <input
+                                type="email"
+                                id="emailPenggunaBaru"
+                                required
+                                placeholder="Masukkan email pengguna"
+                                style="width:100%;padding:12px;margin-top:7px;"
+                            >
+                        </div>
+
+                        <div style="margin-bottom:16px;">
+                            <label for="passwordPenggunaBaru">Kata Sandi Awal</label>
+                            <input
+                                type="password"
+                                id="passwordPenggunaBaru"
+                                required
+                                minlength="8"
+                                placeholder="Minimal 8 karakter"
+                                style="width:100%;padding:12px;margin-top:7px;"
+                            >
+                        </div>
+
+                        <div style="margin-bottom:20px;">
+                            <label for="peranPenggunaBaru">Peran Pengguna</label>
+                            <select
+                                id="peranPenggunaBaru"
+                                required
+                                style="width:100%;padding:12px;margin-top:7px;"
+                            >
+                                <option value="admin_konten">Admin Konten</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" id="tombolTambahPengguna"
+                            style="padding:12px 22px;background:#037FC5;color:white;border:0;border-radius:8px;cursor:pointer;">
+                            Tambah Pengguna
+                        </button>
+
+                        <p id="statusTambahPengguna"
+                            style="margin-top:15px;font-size:14px;"></p>
+                    </form>
                 </div>
+
+                <!-- DAFTAR PENGGUNA -->
+                <div class="daftar-pengguna-admin">
+                    <div class="daftar-pengguna-header">
+                        <div>
+                            <h3>Daftar Pengguna</h3>
+                            <p>Daftar akun yang terdaftar pada website sekolah.</p>
+                        </div>
+
+                        <button type="button" id="tombolMuatPengguna">
+                            <span>↻</span> Muat Ulang
+                        </button>
+                    </div>
+
+                    <div id="statusDaftarPengguna" class="status-daftar-pengguna">
+                        Memuat daftar pengguna...
+                    </div>
+
+                    <div class="tabel-pengguna-wrapper">
+                        <table class="tabel-pengguna">
+                            <thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Nama Lengkap</th>
+                                    <th>Email</th>
+                                    <th>Peran</th>
+                                    <th>Tanggal Dibuat</th>
+                                     <th>Status Akun</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="isiTabelPengguna">
+                                <tr>
+                                    <td colspan="6">Memuat data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+
             </section>
 
         </main>
@@ -232,6 +343,463 @@
     document.querySelectorAll('.sidebar-menu a').forEach(function(menu) {
         menu.addEventListener('click', tutupSidebarMobile);
     });
+
+    
+    // PROSES TAMBAH PENGGUNA BARU
+    const formTambahPengguna = document.getElementById('formTambahPengguna');
+
+    if (formTambahPengguna) {
+        formTambahPengguna.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const tombol = document.getElementById('tombolTambahPengguna');
+            const status = document.getElementById('statusTambahPengguna');
+
+            const nama = document.getElementById('namaPenggunaBaru').value.trim();
+            const email = document.getElementById('emailPenggunaBaru').value.trim();
+            const password = document.getElementById('passwordPenggunaBaru').value;
+            const peran = document.getElementById('peranPenggunaBaru').value;
+
+            if (!nama || !email || !password || !peran) {
+                status.textContent = 'Semua kolom wajib diisi.';
+                status.style.color = '#D8241B';
+                return;
+            }
+
+            tombol.disabled = true;
+            tombol.textContent = 'Sedang Membuat Akun...';
+            status.textContent = 'Mohon tunggu, akun sedang dibuat.';
+            status.style.color = '#037FC5';
+
+            try {
+                const { data, error } = await supabase.functions.invoke(
+                    'admin-create-user',
+                    {
+                        body: {
+                            nama_lengkap: nama,
+                            email: email,
+                            password: password,
+                            peran: peran
+                        }
+                    }
+                );
+
+                if (error) {
+                    let pesan = error.message;
+
+                    if (error.context && typeof error.context.json === 'function') {
+                        const detail = await error.context.json();
+                        if (detail.error) pesan = detail.error;
+                    }
+
+                    throw new Error(pesan);
+                }
+
+                if (!data || !data.sukses) {
+                    throw new Error(data?.error || 'Akun gagal dibuat.');
+                }
+
+                status.textContent = 'Berhasil! Akun ' + data.pengguna.nama_lengkap + ' sudah dibuat dan dapat digunakan untuk login.';
+                status.style.color = '#16803C';
+
+                formTambahPengguna.reset();
+
+                await muatDaftarPengguna();
+
+            } catch (err) {
+                status.textContent = 'Gagal membuat akun: ' + err.message;
+                status.style.color = '#D8241B';
+
+            } finally {
+                tombol.disabled = false;
+                tombol.textContent = 'Tambah Pengguna';
+            }
+        });
+    }
+
+
+    // =====================================
+    // MEMUAT DAFTAR PENGGUNA
+    // =====================================
+
+    async function muatDaftarPengguna() {
+        const tombolMuat = document.getElementById('tombolMuatPengguna');
+        const statusDaftar = document.getElementById('statusDaftarPengguna');
+        const isiTabel = document.getElementById('isiTabelPengguna');
+
+        if (!isiTabel || !statusDaftar) return;
+
+        if (tombolMuat) {
+            tombolMuat.disabled = true;
+            tombolMuat.textContent = 'Memuat...';
+        }
+
+        statusDaftar.textContent = 'Sedang mengambil data pengguna...';
+        statusDaftar.style.color = '#037FC5';
+
+        isiTabel.replaceChildren();
+
+        try {
+            const { data, error } = await supabase.functions.invoke(
+                'admin-list-users'
+            );
+
+            if (error) {
+                let pesan = error.message;
+
+                if (error.context && typeof error.context.json === 'function') {
+                    try {
+                        const detail = await error.context.json();
+                        if (detail.error) pesan = detail.error;
+                    } catch (e) {
+                        // Gunakan pesan error bawaan jika respons bukan JSON.
+                    }
+                }
+
+                throw new Error(pesan);
+            }
+
+            if (!data || !data.sukses) {
+                throw new Error(data?.error || 'Gagal mengambil daftar pengguna.');
+            }
+
+            const daftar = data.pengguna || [];
+
+            if (daftar.length === 0) {
+                const baris = document.createElement('tr');
+                const sel = document.createElement('td');
+
+                sel.colSpan = 7;
+                sel.textContent = 'Belum ada pengguna terdaftar.';
+
+                baris.appendChild(sel);
+                isiTabel.appendChild(baris);
+
+            } else {
+                daftar.forEach(function(pengguna, index) {
+                    const baris = document.createElement('tr');
+
+                    const tanggal = pengguna.created_at
+                        ? new Date(pengguna.created_at).toLocaleDateString('id-ID', {
+                            day: '2-digit',
+                            month: 'long',
+                            year: 'numeric'
+                        })
+                        : '-';
+
+                    const nilaiKolom = [
+                        index + 1,
+                        pengguna.nama_lengkap,
+                        pengguna.email,
+                        pengguna.peran === 'super_admin' ? 'Super Admin' : 'Admin Konten',
+                        pengguna.created_at
+                            ? new Date(pengguna.created_at).toLocaleDateString('id-ID')
+                            : '-',
+                        pengguna.akun_aktif ? 'Aktif' : 'Nonaktif'
+                    ];
+
+
+                nilaiKolom.forEach(function(nilai) {
+                    const sel = document.createElement('td');
+                    sel.textContent = String(nilai);
+                    baris.appendChild(sel);
+                });
+
+                // Kolom aksi
+                const selAksi = document.createElement('td');
+
+                if (pengguna.peran !== 'super_admin') {
+                    const tombolEdit = document.createElement('button');
+
+                    tombolEdit.type = 'button';
+                    tombolEdit.textContent = 'Edit';
+                    tombolEdit.className = 'tombol-edit-pengguna';
+
+                    tombolEdit.addEventListener('click', function() {
+                        editNamaPengguna(pengguna.id, pengguna.nama_lengkap);
+                    });
+
+                    selAksi.appendChild(tombolEdit);
+
+                    // Tombol Reset Password
+                    const tombolReset = document.createElement('button');
+
+                    tombolReset.type = 'button';
+                    tombolReset.textContent = 'Reset Password';
+                    tombolReset.className = 'tombol-reset-password';
+
+                    tombolReset.addEventListener('click', function() {
+                        resetPasswordPengguna(pengguna.id, pengguna.nama_lengkap);
+                    });
+
+                    selAksi.appendChild(tombolReset);
+
+                    // Tombol Aktifkan / Nonaktifkan
+                    const tombolStatus = document.createElement('button');
+
+                    tombolStatus.type = 'button';
+                    tombolStatus.textContent = pengguna.akun_aktif
+                        ? 'Nonaktifkan'
+                        : 'Aktifkan';
+
+                    tombolStatus.className = pengguna.akun_aktif
+                        ? 'tombol-nonaktifkan-pengguna'
+                        : 'tombol-aktifkan-pengguna';
+
+                    tombolStatus.addEventListener('click', function() {
+                        ubahStatusPengguna(
+                            pengguna.id,
+                            pengguna.nama_lengkap,
+                            pengguna.akun_aktif
+                        );
+                    });
+
+                    selAksi.appendChild(tombolStatus);
+
+                } else {
+                    selAksi.textContent = '-';
+                }
+
+                baris.appendChild(selAksi);
+                isiTabel.appendChild(baris);
+                    
+                });
+            }
+
+            statusDaftar.textContent =
+                'Berhasil memuat ' + daftar.length + ' pengguna.';
+
+            statusDaftar.style.color = '#16803C';
+
+        } catch (err) {
+            console.error('Gagal memuat daftar pengguna:', err);
+
+            statusDaftar.textContent =
+                'Gagal memuat daftar pengguna: ' + err.message;
+
+            statusDaftar.style.color = '#D8241B';
+
+            const baris = document.createElement('tr');
+            const sel = document.createElement('td');
+
+            sel.colSpan = 6;
+            sel.textContent = 'Data belum dapat ditampilkan.';
+
+            baris.appendChild(sel);
+            isiTabel.appendChild(baris);
+
+        } finally {
+            if (tombolMuat) {
+                tombolMuat.disabled = false;
+                tombolMuat.innerHTML = '<span>↻</span> Muat Ulang';
+            }
+        }
+    }
+
+
+
+    // Tombol muat ulang daftar pengguna
+    const tombolMuatPengguna = document.getElementById('tombolMuatPengguna');
+
+    if (tombolMuatPengguna) {
+        tombolMuatPengguna.addEventListener('click', muatDaftarPengguna);
+    }
+
+
+
+        // =====================================
+        // EDIT NAMA PENGGUNA
+        // =====================================
+
+        async function editNamaPengguna(id, namaLama) {
+            const namaBaru = prompt(
+                'Masukkan nama lengkap yang baru:',
+                namaLama
+            );
+
+            if (namaBaru === null) return;
+
+            const nama = namaBaru.trim();
+
+            if (!nama) {
+                alert('Nama lengkap tidak boleh kosong.');
+                return;
+            }
+
+            if (nama.length > 150) {
+                alert('Nama lengkap maksimal 150 karakter.');
+                return;
+            }
+
+            if (nama === namaLama) return;
+
+            const setuju = confirm(
+                'Apakah Anda yakin ingin mengubah nama pengguna ini?'
+            );
+
+            if (!setuju) return;
+
+            try {
+                const { data, error } = await supabase.functions.invoke(
+                    'admin-edit-user',
+                    {
+                        body: {
+                            id: id,
+                            nama_lengkap: nama
+                        }
+                    }
+                );
+
+                if (error) {
+                    let pesan = error.message;
+
+                    if (error.context && typeof error.context.json === 'function') {
+                        try {
+                            const detail = await error.context.json();
+                            if (detail.error) pesan = detail.error;
+                        } catch (e) {}
+                    }
+
+                    throw new Error(pesan);
+                }
+
+                if (!data || !data.sukses) {
+                    throw new Error(data?.error || 'Gagal mengubah nama pengguna.');
+                }
+
+                alert('Nama pengguna berhasil diperbarui.');
+
+                await muatDaftarPengguna();
+
+            } catch (err) {
+                console.error('Gagal mengubah nama pengguna:', err);
+                alert('Gagal mengubah nama: ' + err.message);
+            }
+        }
+
+
+        async function resetPasswordPengguna(id, namaPengguna) {
+            const passwordBaru = prompt(
+                'Masukkan password baru untuk ' + namaPengguna + ':\nMinimal 8 karakter.'
+            );
+
+            if (passwordBaru === null) return;
+
+            if (passwordBaru.length < 8) {
+                alert('Password baru minimal 8 karakter.');
+                return;
+            }
+
+            const konfirmasi = prompt('Masukkan kembali password baru untuk konfirmasi:');
+
+            if (konfirmasi === null) return;
+
+            if (passwordBaru !== konfirmasi) {
+                alert('Konfirmasi password tidak sama.');
+                return;
+            }
+
+            const setuju = confirm(
+                'Apakah Anda yakin ingin mereset password pengguna ' + namaPengguna + '?'
+            );
+
+            if (!setuju) return;
+
+            try {
+                const { data, error } = await supabase.functions.invoke(
+                    'admin-reset-password',
+                    {
+                        body: {
+                            id: id,
+                            password: passwordBaru
+                        }
+                    }
+                );
+
+                if (error) {
+                    let pesan = error.message;
+
+                    if (error.context && typeof error.context.json === 'function') {
+                        try {
+                            const detail = await error.context.json();
+                            if (detail.error) pesan = detail.error;
+                        } catch (e) {}
+                    }
+
+                    throw new Error(pesan);
+                }
+
+                if (!data || !data.sukses) {
+                    throw new Error(data?.error || 'Gagal mereset password.');
+                }
+
+                alert('Password pengguna berhasil direset.');
+
+            } catch (err) {
+                console.error('Gagal mereset password:', err);
+                alert('Gagal mereset password: ' + err.message);
+            }
+        }
+
+
+
+        
+        async function ubahStatusPengguna(id, namaPengguna, statusSekarang) {
+            const statusBaru = !statusSekarang;
+
+            const tindakan = statusBaru ? 'mengaktifkan' : 'menonaktifkan';
+
+            const konfirmasi = confirm(
+                'Apakah Anda yakin ingin ' + tindakan +
+                ' akun ' + namaPengguna + '?'
+            );
+
+            if (!konfirmasi) return;
+
+            try {
+                const { data, error } = await supabase.functions.invoke(
+                    'admin-toggle-user',
+                    {
+                        body: {
+                            id: id,
+                            akun_aktif: statusBaru
+                        }
+                    }
+                );
+
+                if (error) {
+                    let pesan = error.message;
+
+                    if (error.context && typeof error.context.json === 'function') {
+                        try {
+                            const detail = await error.context.json();
+                            if (detail.error) pesan = detail.error;
+                        } catch (e) {}
+                    }
+
+                    throw new Error(pesan);
+                }
+
+                if (!data || !data.sukses) {
+                    throw new Error(data?.error || 'Gagal mengubah status akun.');
+                }
+
+                alert(data.pesan || 'Status akun berhasil diperbarui.');
+
+                await muatDaftarPengguna();
+
+            } catch (err) {
+                console.error('Gagal mengubah status akun:', err);
+                alert('Gagal mengubah status akun: ' + err.message);
+            }
+        }
+
+
+    // Muat daftar saat halaman dibuka oleh Super Admin
+    if (aksesDiizinkan) {
+        muatDaftarPengguna();
+    }
+
 
 </script>
 

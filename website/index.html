@@ -238,52 +238,58 @@
 
     </section>
 
-    
+
     <section class="sambutan" id="sambutan">
 
       <div class="sambutan-container">
 
-        <div class="sambutan-foto">
-          <div class="foto-placeholder">
-            FOTO KEPALA SEKOLAH
-          </div>
+        <div class="sambutan-foto" id="sambutanFotoContainer">
+          <div class="sambutan-foto-frame">
+            <div class="foto-placeholder" id="sambutanFotoPlaceholder">
+              FOTO KEPALA SEKOLAH
+            </div>
+            <img id="sambutanFoto"
+                src=""
+                alt="Foto Kepala Sekolah"
+                hidden>
+            </div>    
         </div>
 
         <div class="sambutan-content">
           <span class="section-label">SAMBUTAN KEPALA SEKOLAH</span>
 
-          <h2>Selamat Datang di Website Resmi SMP Negeri 4 Tanggul</h2>
+          <h2 id="sambutanJudul">
+            Selamat Datang di Website Resmi SMP Negeri 4 Tanggul
+          </h2>
 
-          <p>
-            Assalamu'alaikum warahmatullahi wabarakatuh.
-          </p>
+          <div id="sambutanIsi">
+            <p>Assalamu'alaikum warahmatullahi wabarakatuh.</p>
 
-          <p>
-            Selamat datang di website resmi SMP Negeri 4 Tanggul.
-            Website ini kami hadirkan sebagai sarana informasi,
-            komunikasi, dan publikasi berbagai kegiatan sekolah.
-          </p>
+            <p>
+              Selamat datang di website resmi SMP Negeri 4 Tanggul.
+              Website ini kami hadirkan sebagai sarana informasi,
+              komunikasi, dan publikasi berbagai kegiatan sekolah.
+            </p>
 
-          <p>
-            Semoga website ini dapat memberikan manfaat bagi
-            seluruh warga sekolah, orang tua, dan masyarakat.
-          </p>
+            <p>
+              Semoga website ini dapat memberikan manfaat bagi
+              seluruh warga sekolah, orang tua, dan masyarakat.
+            </p>
 
-          <p>
-            Wassalamu'alaikum warahmatullahi wabarakatuh.
-          </p>
+            <p>Wassalamu'alaikum warahmatullahi wabarakatuh.</p>
+          </div>
 
           <div class="sambutan-identitas">
             <strong>Kepala SMP Negeri 4 Tanggul</strong>
-            <span>Nama Kepala Sekolah</span>
+            <span id="sambutanNama">Nama Kepala Sekolah</span>
           </div>
         </div>
 
       </div>
 
     </section>
-
-
+   
+    
     <section class="pengumuman" id="pengumuman">
 
       <div class="section-heading">
@@ -685,8 +691,66 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+
+async function muatSambutanKepalaSekolah() {
+  try {
+    const { data, error } = await supabase
+      .from('sambutan_kepala_sekolah')
+      .select('*')
+      .order('id', { ascending: true })
+      .limit(1)
+      .single();
+
+    if (error) throw error;
+
+    if (!data) return;
+
+    // Tampilkan judul sambutan
+    document.getElementById('sambutanJudul').textContent =
+      data.judul || '';
+
+    // Tampilkan nama kepala sekolah
+    document.getElementById('sambutanNama').textContent =
+      data.nama_kepala_sekolah || '';
+
+    // Tampilkan isi sambutan
+    const wadahIsi = document.getElementById('sambutanIsi');
+    wadahIsi.replaceChildren();
+
+    const paragraf = (data.isi_sambutan || '')
+      .split(/\r?\n/)
+      .map(teks => teks.trim())
+      .filter(teks => teks.length > 0);
+
+    paragraf.forEach(teks => {
+      const p = document.createElement('p');
+      p.textContent = teks;
+      wadahIsi.appendChild(p);
+    });
+
+    // Tampilkan foto jika tersedia
+    const foto = document.getElementById('sambutanFoto');
+    const placeholder = document.getElementById('sambutanFotoPlaceholder');
+
+    if (data.foto_url) {
+      foto.src = data.foto_url;
+      foto.hidden = false;
+      placeholder.hidden = true;
+    } else {
+      foto.hidden = true;
+      placeholder.hidden = false;
+    }
+
+  } catch (error) {
+    console.error('Gagal memuat sambutan kepala sekolah:', error);
+  }
+}
+
+
   // PANGGIL FUNGSI PEMUATAN
+  
   muatProfilSekolah();
+  muatSambutanKepalaSekolah()
   muatBerita();
   muatPengumuman();
 </script>

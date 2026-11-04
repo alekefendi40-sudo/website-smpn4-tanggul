@@ -595,9 +595,7 @@ footer p {
   margin: 0 auto;
 }
 
-.sambutan-foto {
-  width: 100%;
-}
+
 
 .foto-placeholder {
   min-height: 390px;
@@ -662,6 +660,7 @@ footer p {
   .foto-placeholder {
     min-height: 300px;
   }
+  
 
   .sambutan-content h2 {
     font-size: 25px;
@@ -1513,7 +1512,7 @@ footer {
   justify-content: center;
   gap: 10px;
   width: 100%;
-  margin-top: auto;
+  margin-top: 30px;
   padding: 13px 15px;
   border: 1px solid #F5D5D3;
   border-radius: 10px;
@@ -1524,6 +1523,7 @@ footer {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.25s ease;
+  flex-shrink: 0;
 }
 
 .logout-admin:hover {
@@ -4696,4 +4696,355 @@ footer {
 #formProfilSekolah .form-group:has(#misi) {
     grid-column: 1 / -1;
 }
+
+/* Kotak isi sambutan menggunakan lebar penuh */
+.halaman-profil-admin #isiSambutan {
+    width: 100%;
+    min-height: 300px;
+    box-sizing: border-box;
+}
+
+.halaman-profil-admin .form-group:has(#isiSambutan) {
+    grid-column: 1 / -1;
+}
+
+/* Teks sambutan kepala sekolah rata kanan-kiri */
+.sambutan-content #sambutanIsi {
+    text-align: justify;
+}
+
+.sambutan-content #sambutanIsi p {
+    text-align: justify;
+}
+
+/* Sejarah singkat sekolah rata kanan-kiri */
+#profilSejarah {
+    text-align: justify;
+}
+
+#profilSejarah p {
+    text-align: justify;
+}
+
+/* Visi dan Misi rata kanan-kiri */
+#profilVisi {
+    text-align: justify;
+}
+
+#profilMisi {
+    text-align: justify;
+}
+
+#profilMisi li {
+    text-align: justify;
+}
+
+/* Sejarah Singkat */
+#profilSejarah,
+#profilSejarah p {
+    text-align: justify;
+}
+
+/* Visi dan Misi */
+#profilVisi,
+#profilMisi,
+#profilMisi li {
+    text-align: justify;
+}
+
+#sambutanFoto {
+  display: block;
+  width: 102%;
+  height: auto;
+  max-height: 450px;
+  object-fit: contain;
+  border-radius: 5% !important;
+  clip-path: inset(0 round 5%);
+}
+
+
+/* =====================================
+   HALAMAN KELOLA PENGGUNA
+===================================== */
+
+.form-tambah-pengguna {
+    max-width: 760px;
+    margin: 25px auto;
+    padding: 30px !important;
+    background: #FFFFFF;
+    border: 1px solid #E3EAF0;
+    border-radius: 16px;
+    box-shadow: 0 6px 22px rgba(36, 32, 33, 0.04);
+}
+
+.form-tambah-pengguna h3 {
+    margin: 0 0 8px;
+    color: #242021;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.form-tambah-pengguna > p {
+    margin-bottom: 25px;
+    color: #718096;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.form-tambah-pengguna form {
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+}
+
+.form-tambah-pengguna form > div {
+    margin-bottom: 0 !important;
+}
+
+.form-tambah-pengguna label {
+    display: block;
+    margin-bottom: 7px;
+    color: #344054;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.form-tambah-pengguna input,
+.form-tambah-pengguna select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px !important;
+    border: 1px solid #DCE2E6;
+    border-radius: 9px;
+    background: #FFFFFF;
+    color: #242021;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-tambah-pengguna input:focus,
+.form-tambah-pengguna select:focus {
+    border-color: #037FC5;
+    box-shadow: 0 0 0 3px rgba(3, 127, 197, 0.10);
+}
+
+.form-tambah-pengguna button {
+    align-self: flex-start;
+    padding: 12px 22px !important;
+    border: none;
+    border-radius: 9px !important;
+    background: #037FC5 !important;
+    color: #FFFFFF !important;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.form-tambah-pengguna button:hover {
+    background: #026AA7 !important;
+    transform: translateY(-1px);
+}
+
+.form-tambah-pengguna button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#statusTambahPengguna {
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 768px) {
+    .form-tambah-pengguna {
+        margin: 15px 0;
+        padding: 20px !important;
+    }
+
+    .form-tambah-pengguna button {
+        width: 100%;
+    }
+}
+
+
+/* =====================================
+   DAFTAR PENGGUNA ADMIN
+===================================== */
+
+.daftar-pengguna-admin {
+    margin: 30px 25px;
+    padding: 25px;
+    background: #FFFFFF;
+    border: 1px solid #E3EAF0;
+    border-radius: 16px;
+    box-shadow: 0 6px 22px rgba(36, 32, 33, 0.04);
+}
+
+.daftar-pengguna-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 22px;
+}
+
+.daftar-pengguna-header h3 {
+    margin: 0 0 7px;
+    color: #242021;
+    font-size: 20px;
+}
+
+.daftar-pengguna-header p {
+    margin: 0;
+    color: #718096;
+    font-size: 14px;
+}
+
+.daftar-pengguna-header button {
+    padding: 10px 15px;
+    border: 1px solid #DCEAF2;
+    border-radius: 8px;
+    background: #F4F9FC;
+    color: #037FC5;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.daftar-pengguna-header button:hover {
+    background: #EAF5FC;
+}
+
+.status-daftar-pengguna {
+    margin-bottom: 15px;
+    color: #718096;
+    font-size: 13px;
+}
+
+.tabel-pengguna-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.tabel-pengguna {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 650px;
+}
+
+.tabel-pengguna th,
+.tabel-pengguna td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #E8EEF3;
+    text-align: left;
+    font-size: 13px;
+}
+
+.tabel-pengguna th {
+    background: #F4F7FA;
+    color: #344054;
+    font-weight: 700;
+}
+
+.tabel-pengguna td {
+    color: #475467;
+}
+
+.tabel-pengguna tbody tr:hover {
+    background: #F8FBFD;
+}
+
+@media (max-width: 768px) {
+    .daftar-pengguna-admin {
+        margin: 20px 0;
+        padding: 18px;
+    }
+
+    .daftar-pengguna-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+
+
+/* TOMBOL EDIT PENGGUNA */
+
+.tombol-edit-pengguna {
+    padding: 7px 13px;
+    border: 1px solid #DCEAF2;
+    border-radius: 7px;
+    background: #F4F9FC;
+    color: #037FC5;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.tombol-edit-pengguna:hover {
+    background: #037FC5;
+    color: #FFFFFF;
+}
+
+.tombol-reset-password {
+    padding: 7px 13px;
+    border: 1px solid #F5D5D3;
+    border-radius: 7px;
+    background: #FFF5F4;
+    color: #D8241B;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-left: 5px;
+}
+
+.tombol-reset-password:hover {
+    background: #D8241B;
+    color: #FFFFFF;
+}
+
+
+.tombol-nonaktifkan-pengguna,
+.tombol-aktifkan-pengguna {
+    padding: 7px 13px;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    margin: 5px 0 0 5px;
+}
+
+.tombol-nonaktifkan-pengguna {
+    border: 1px solid #F5D5D3;
+    background: #FFF5F4;
+    color: #D8241B;
+}
+
+.tombol-nonaktifkan-pengguna:hover {
+    background: #D8241B;
+    color: #FFFFFF;
+}
+
+.tombol-aktifkan-pengguna {
+    border: 1px solid #CDEAD7;
+    background: #F0FAF3;
+    color: #16803C;
+}
+
+.tombol-aktifkan-pengguna:hover {
+    background: #16803C;
+    color: #FFFFFF;
+}
+
 
