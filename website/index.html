@@ -91,7 +91,7 @@
       <a href="#profil">Profil</a>
       <a href="#berita">Berita</a>
       <a href="#pengumuman">Pengumuman</a>
-      <a href="galeri.html">Galeri</a>
+      <a href="#galeri">Galeri</a>
       <a href="#kontak">Kontak</a>
     </nav>
 
@@ -321,28 +321,8 @@
         <p>Momen dan aktivitas warga SMP Negeri 4 Tanggul.</p>
       </div>
 
-      <div class="galeri-grid">
-
-        <div class="galeri-item">
-          <img src="https://placehold.co/600x400/037FC5/FFFFFF?text=Upacara+Sekolah"
-              alt="Kegiatan upacara sekolah">
-        </div>
-
-        <div class="galeri-item">
-          <img src="https://placehold.co/600x400/4D6478/FFFFFF?text=Kegiatan+Belajar"
-              alt="Kegiatan belajar">
-        </div>
-
-        <div class="galeri-item">
-          <img src="https://placehold.co/600x400/D8241B/FFFFFF?text=Ekstrakurikuler"
-              alt="Kegiatan ekstrakurikuler">
-        </div>
-
-        <div class="galeri-item">
-          <img src="https://placehold.co/600x400/77C4EE/242021?text=Prestasi+Siswa"
-              alt="Prestasi siswa">
-        </div>
-
+      <div class="galeri-grid" id="galeriBeranda">
+          <p id="statusGaleriBeranda">Memuat galeri sekolah...</p>
       </div>
 
       <div class="galeri-link">
@@ -691,6 +671,67 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // =====================================
+  // MEMUAT GALERI BERANDA
+  // =====================================
+
+  async function muatGaleri() {
+    const daftarGaleri =
+      document.getElementById('galeriBeranda');
+
+    const statusGaleri =
+      document.getElementById('statusGaleriBeranda');
+
+    const { data, error } = await supabase
+      .from('galeri')
+      .select('judul, keterangan, file_path, created_at')
+      .eq('status', 'published')
+      .order('created_at', { ascending: false })
+      .limit(4);
+
+    if (error) {
+      console.error('Gagal memuat galeri:', error.message);
+      statusGaleri.textContent =
+        'Galeri belum dapat dimuat.';
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      statusGaleri.textContent =
+        'Belum ada foto galeri yang diterbitkan.';
+      return;
+    }
+
+    daftarGaleri.replaceChildren();
+
+    data.forEach(function(foto) {
+      const kartu = document.createElement('div');
+      kartu.className = 'galeri-item';
+
+      const gambar = document.createElement('img');
+      gambar.alt = foto.judul;
+      gambar.loading = 'lazy';
+
+      const { data: urlData } = supabase.storage
+        .from('galeri-sekolah')
+        .getPublicUrl(foto.file_path);
+
+      gambar.src = urlData.publicUrl;
+
+      const keterangan = document.createElement('div');
+      keterangan.className = 'galeri-keterangan';
+
+      const judul = document.createElement('h3');
+      judul.textContent = foto.judul;
+
+      const deskripsi = document.createElement('p');
+      deskripsi.textContent = foto.keterangan || '';
+
+      keterangan.append(judul, deskripsi);
+      kartu.append(gambar, keterangan);
+      daftarGaleri.appendChild(kartu);
+    });
+  }
 
 async function muatSambutanKepalaSekolah() {
   try {
@@ -750,9 +791,10 @@ async function muatSambutanKepalaSekolah() {
   // PANGGIL FUNGSI PEMUATAN
   
   muatProfilSekolah();
-  muatSambutanKepalaSekolah()
+  muatSambutanKepalaSekolah();
   muatBerita();
   muatPengumuman();
+  muatGaleri();
 </script>
 
 

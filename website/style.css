@@ -5336,3 +5336,250 @@ footer {
 .tombol-hapus-galeri:hover {
     background: #A91C16;
 }
+
+/* TOMBOL KEMBALI HALAMAN ARSIP GALERI */
+.tombol-kembali-galeri {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 20px;
+  border-radius: 9px;
+  background: #037FC5;
+  color: #FFFFFF;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.tombol-kembali-galeri:hover {
+  background: #D8241B;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .tombol-kembali-galeri {
+    padding: 9px 13px;
+    font-size: 12px;
+  }
+}
+
+
+/* =====================================
+   LIGHTBOX GALERI
+===================================== */
+
+.galeri-lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.92);
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+.galeri-lightbox.aktif {
+  display: flex;
+}
+
+.lightbox-konten {
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  text-align: center;
+}
+
+.lightbox-konten img {
+  max-width: 100%;
+  max-height: 72vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+#lightboxJudul {
+  color: #FFFFFF;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 15px 0 5px;
+}
+
+#lightboxKeterangan {
+  color: #CBD5E1;
+  font-size: 14px;
+  margin: 0;
+}
+
+.lightbox-tutup {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  border: none;
+  background: transparent;
+  color: #FFFFFF;
+  font-size: 42px;
+  cursor: pointer;
+}
+
+.lightbox-navigasi {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #FFFFFF;
+  font-size: 22px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.lightbox-navigasi:hover,
+.lightbox-tutup:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.lightbox-sebelumnya {
+  left: 25px;
+}
+
+.lightbox-berikutnya {
+  right: 25px;
+}
+
+@media (max-width: 600px) {
+  .galeri-lightbox {
+    padding: 15px;
+  }
+
+  .lightbox-konten img {
+    max-height: 65vh;
+  }
+
+  .lightbox-navigasi {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+  }
+
+  .lightbox-sebelumnya {
+    left: 8px;
+  }
+
+  .lightbox-berikutnya {
+    right: 8px;
+  }
+
+  .lightbox-tutup {
+    top: 10px;
+    right: 15px;
+  }
+}
+
+/* NOMOR FOTO LIGHTBOX */
+#lightboxNomor {
+  color: #CBD5E1;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 10px 0 8px;
+  letter-spacing: 1px;
+}
+
+/* ANIMASI LIGHTBOX GALERI */
+
+.galeri-lightbox {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.galeri-lightbox.aktif {
+  opacity: 1;
+}
+
+.galeri-lightbox .lightbox-konten {
+  transform: scale(0.94);
+  transition: transform 0.25s ease;
+}
+
+.galeri-lightbox.aktif .lightbox-konten {
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .galeri-lightbox,
+  .galeri-lightbox .lightbox-konten {
+    transition: none;
+  }
+}
+
+
+/* TOMBOL BATAL EDIT GALERI */
+#tombolBatalEditGaleri {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 1px solid #64748B;
+  border-radius: 9px;
+  background: #334155;
+  color: #FFFFFF;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+#tombolBatalEditGaleri:hover {
+  background: #475569;
+  border-color: #94A3B8;
+  transform: translateY(-2px);
+}
+
+#tombolBatalEditGaleri:active {
+  transform: translateY(0);
+}
+
+#tombolBatalEditGaleri:focus-visible {
+  outline: 3px solid #77C4EE;
+  outline-offset: 3px;
+}
+
+/* TOMBOL TAMBAH FOTO GALERI */
+#tombolTambahGaleri {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border: none;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #037FC5, #D11575);
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+#tombolTambahGaleri:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(3, 127, 197, 0.25);
+}
+
+#tombolTambahGaleri:active {
+    transform: translateY(0);
+}
+
+#tombolTambahGaleri:focus-visible {
+    outline: 3px solid #77C4EE;
+    outline-offset: 3px;
+}

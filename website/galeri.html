@@ -9,90 +9,65 @@
 </head>
 <body>
 
-<header class="navbar">
-  <div class="logo">
-    <img src="assets/logo-sekolah.png" alt="Logo SMP Negeri 4 Tanggul">
+<body>
 
-    <div class="logo-text">
-      <h1>SMP Negeri 4 Tanggul</h1>
-      <p>Website Resmi Sekolah</p>
-    </div>
-  </div>
+  <main class="arsip-berita-container">
 
-  <nav>
-    <a href="index.html">Beranda</a>
-    <a href="index.html#profil">Profil</a>
-    <a href="index.html#berita">Berita</a>
-    <a href="index.html#pengumuman">Pengumuman</a>
-    <a href="galeri.html">Galeri</a>
-    <a href="index.html#kontak">Kontak</a>
-  </nav>
-</header>
+    <a href="index.html#galeri" class="detail-berita-kembali">
+      ← Kembali ke Beranda
+    </a>
 
-<main>
-
-  <section class="galeri halaman-galeri">
-
-    <div class="section-heading">
-      <span class="section-label">DOKUMENTASI SEKOLAH</span>
-      <h2>Galeri SMP Negeri 4 Tanggul</h2>
+    <header class="arsip-berita-header">
+      <h1>Galeri SMP Negeri 4 Tanggul</h1>
       <p>
         Dokumentasi kegiatan, aktivitas, dan berbagai momen
         warga SMP Negeri 4 Tanggul.
       </p>
+    </header>
+
+    <div class="galeri-grid" id="galeriArsip">
+      <p id="statusGaleriArsip">Memuat seluruh galeri sekolah...</p>
     </div>
 
-    <div class="galeri-grid">
+  </main>
 
-      <div class="galeri-item">
-        <img src="https://placehold.co/600x400/037FC5/FFFFFF?text=Upacara+Sekolah"
-             alt="Kegiatan upacara sekolah">
-      </div>
 
-      <div class="galeri-item">
-        <img src="https://placehold.co/600x400/4D6478/FFFFFF?text=Kegiatan+Belajar"
-             alt="Kegiatan belajar">
-      </div>
+<!-- LIGHTBOX GALERI -->
+<div id="galeriLightbox" class="galeri-lightbox" aria-hidden="true">
 
-      <div class="galeri-item">
-        <img src="https://placehold.co/600x400/D8241B/FFFFFF?text=Ekstrakurikuler"
-             alt="Kegiatan ekstrakurikuler">
-      </div>
+  <button
+    type="button"
+    class="lightbox-tutup"
+    id="lightboxTutup"
+    aria-label="Tutup foto">
+    &times;
+  </button>
 
-      <div class="galeri-item">
-        <img src="https://placehold.co/600x400/77C4EE/242021?text=Prestasi+Siswa"
-             alt="Prestasi siswa">
-      </div>
+  <button
+    type="button"
+    class="lightbox-navigasi lightbox-sebelumnya"
+    id="lightboxSebelumnya"
+    aria-label="Foto sebelumnya">
+    &#10094;
+  </button>
 
-      <div class="galeri-item">
-        <img src="https://placehold.co/600x400/037FC5/FFFFFF?text=Kegiatan+Sekolah"
-             alt="Kegiatan sekolah">
-      </div>
+  <div class="lightbox-konten">
+    <img id="lightboxGambar" src="" alt="">
+    <p id="lightboxNomor"></p>
+    <p id="lightboxJudul"></p>
+    <p id="lightboxKeterangan"></p>
+  </div>
 
-      <div class="galeri-item">
-        <img src="https://placehold.co/600x400/4D6478/FFFFFF?text=Lingkungan+Sekolah"
-             alt="Lingkungan sekolah">
-      </div>
+  <button
+    type="button"
+    class="lightbox-navigasi lightbox-berikutnya"
+    id="lightboxBerikutnya"
+    aria-label="Foto berikutnya">
+    &#10095;
+  </button>
 
-      <div class="galeri-item">
-        <img src="https://placehold.co/600x400/D8241B/FFFFFF?text=Kegiatan+Siswa"
-             alt="Kegiatan siswa">
-      </div>
-
-      <div class="galeri-item">
-        <img src="https://placehold.co/600x400/77C4EE/242021?text=Dokumentasi"
-             alt="Dokumentasi sekolah">
-      </div>
-
-    </div>
-
-    <div class="galeri-link">
-      <a href="index.html">Kembali ke Beranda</a>
-    </div>
-
-  </section>
-
-</main>
+</div>
+<!-- AKHIR LIGHTBOX GALERI -->
 
 <footer>
   <div class="footer-content">
@@ -103,19 +78,192 @@
 </footer>
 
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const menuLinks = document.querySelectorAll("nav a");
+
+<script type="module">
+import { supabase } from './supabase.js';
+
+let dataFotoGaleri = [];
+let indeksFotoAktif = 0;
+
+// MEMBUKA LIGHTBOX
+function bukaLightbox(index) {
+  indeksFotoAktif = index;
+  tampilkanFotoLightbox();
+
+  const lightbox = document.getElementById('galeriLightbox');
+  lightbox.classList.add('aktif');
+  lightbox.setAttribute('aria-hidden', 'false');
+
+  document.body.style.overflow = 'hidden';
+}
+
+// MENAMPILKAN FOTO
+function tampilkanFotoLightbox() {
+  const foto = dataFotoGaleri[indeksFotoAktif];
+
+  const { data: urlData } = supabase.storage
+    .from('galeri-sekolah')
+    .getPublicUrl(foto.file_path);
+
+  document.getElementById('lightboxGambar').src =
+    urlData.publicUrl;
+
+  document.getElementById('lightboxGambar').alt =
+    foto.judul;
+  document.getElementById('lightboxNomor').textContent =
+  `${indeksFotoAktif + 1} dari ${dataFotoGaleri.length}`;
+
+  document.getElementById('lightboxJudul').textContent =
+    foto.judul;
+
+  document.getElementById('lightboxKeterangan').textContent =
+    foto.keterangan || '';
+}
+
+// FOTO SEBELUMNYA
+function fotoSebelumnya() {
+  indeksFotoAktif =
+    (indeksFotoAktif - 1 + dataFotoGaleri.length)
+    % dataFotoGaleri.length;
+
+  tampilkanFotoLightbox();
+}
+
+// FOTO BERIKUTNYA
+function fotoBerikutnya() {
+  indeksFotoAktif =
+    (indeksFotoAktif + 1) % dataFotoGaleri.length;
+
+  tampilkanFotoLightbox();
+}
+
+// MENUTUP LIGHTBOX
+function tutupLightbox() {
+  const lightbox = document.getElementById('galeriLightbox');
+
+  lightbox.classList.remove('aktif');
+  lightbox.setAttribute('aria-hidden', 'true');
+
+  document.getElementById('lightboxGambar').src = '';
+
+  document.body.style.overflow = '';
+}
+
+// MEMUAT SELURUH ARSIP GALERI
+async function muatArsipGaleri() {
+  const daftarGaleri = document.getElementById('galeriArsip');
+  const statusGaleri = document.getElementById('statusGaleriArsip');
+
+  const { data, error } = await supabase
+    .from('galeri')
+    .select('judul, keterangan, file_path, created_at')
+    .eq('status', 'published')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Gagal memuat arsip galeri:', error.message);
+    statusGaleri.textContent = 'Galeri belum dapat dimuat.';
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    statusGaleri.textContent =
+      'Belum ada foto galeri yang diterbitkan.';
+    return;
+  }
+
+  daftarGaleri.replaceChildren();
+
+  dataFotoGaleri = data;
+
+  data.forEach(function(foto, index) {
+    const kartu = document.createElement('div');
+    kartu.className = 'galeri-item';
+
+    const gambar = document.createElement('img');
+    gambar.alt = foto.judul;
+    gambar.loading = 'lazy';
+
+    const { data: urlData } = supabase.storage
+      .from('galeri-sekolah')
+      .getPublicUrl(foto.file_path);
+
+    gambar.src = urlData.publicUrl;
+
+    gambar.style.cursor = 'pointer';
+
+    gambar.addEventListener('click', function() {
+      bukaLightbox(index);
+    });
+
+    const keterangan = document.createElement('div');
+    keterangan.className = 'galeri-keterangan';
+
+    const judul = document.createElement('h3');
+    judul.textContent = foto.judul;
+
+    const deskripsi = document.createElement('p');
+    deskripsi.textContent = foto.keterangan || '';
+
+    keterangan.append(judul, deskripsi);
+    kartu.append(gambar, keterangan);
+    daftarGaleri.appendChild(kartu);
+  });
+}
+
+// MENU AKTIF
+document.addEventListener('DOMContentLoaded', function() {
+  const menuLinks = document.querySelectorAll('nav a');
 
   menuLinks.forEach(link => {
-    link.classList.remove("active");
+    link.classList.remove('active');
 
-    if (link.getAttribute("href") === "galeri.html") {
-      link.classList.add("active");
+    if (link.getAttribute('href') === 'galeri.html') {
+      link.classList.add('active');
     }
   });
+
+  // TOMBOL LIGHTBOX
+document.getElementById('lightboxTutup')
+  .addEventListener('click', tutupLightbox);
+
+document.getElementById('lightboxSebelumnya')
+  .addEventListener('click', fotoSebelumnya);
+
+document.getElementById('lightboxBerikutnya')
+  .addEventListener('click', fotoBerikutnya);
+
+// KLIK AREA GELAP UNTUK MENUTUP
+document.getElementById('galeriLightbox')
+  .addEventListener('click', function(event) {
+    if (event.target === this) {
+      tutupLightbox();
+    }
+  });
+
+// NAVIGASI KEYBOARD
+document.addEventListener('keydown', function(event) {
+  const lightbox = document.getElementById('galeriLightbox');
+
+  if (!lightbox.classList.contains('aktif')) return;
+
+  if (event.key === 'Escape') {
+    tutupLightbox();
+  }
+
+  if (event.key === 'ArrowLeft') {
+    fotoSebelumnya();
+  }
+
+  if (event.key === 'ArrowRight') {
+    fotoBerikutnya();
+  }
+});
+
+  muatArsipGaleri();
 });
 </script>
+
 
 
 </body>

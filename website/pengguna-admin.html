@@ -139,7 +139,7 @@
                 </div>
 
 
-                <div class="form-tambah-pengguna" style="padding:25px;">
+                <div class="form-tambah-pengguna" style="padding:25px;" hidden>
                     <h3 style="margin-bottom:8px;">Tambah Akun Pengguna</h3>
                     <p style="color:#718096;margin-bottom:22px;">
                         Buat akun administrator atau guru agar dapat masuk ke website sekolah.
@@ -196,6 +196,10 @@
                             Tambah Pengguna
                         </button>
 
+                        <button type="button" id="tombolBatalTambahPengguna">
+                            Batal
+                        </button>
+
                         <p id="statusTambahPengguna"
                             style="margin-top:15px;font-size:14px;"></p>
                     </form>
@@ -209,9 +213,15 @@
                             <p>Daftar akun yang terdaftar pada website sekolah.</p>
                         </div>
 
-                        <button type="button" id="tombolMuatPengguna">
-                            <span>↻</span> Muat Ulang
-                        </button>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button type="button" id="tombolTambahPenggunaBaru">
+                                + Tambah Pengguna
+                            </button>
+
+                            <button type="button" id="tombolMuatPengguna">
+                                <span>↻</span> Muat Ulang
+                            </button>
+                        </div>
                     </div>
 
                     <div id="statusDaftarPengguna" class="status-daftar-pengguna">
@@ -344,7 +354,28 @@
         menu.addEventListener('click', tutupSidebarMobile);
     });
 
-    
+    // TOMBOL BUKA DAN TUTUP FORM TAMBAH PENGGUNA
+    const formPengguna = document.querySelector('.form-tambah-pengguna');
+
+    document.getElementById('tombolTambahPenggunaBaru')
+        .addEventListener('click', function() {
+            formTambahPengguna.reset();
+            document.getElementById('statusTambahPengguna').textContent = '';
+            formPengguna.hidden = false;
+
+            formPengguna.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        });
+                
+        document.getElementById('tombolBatalTambahPengguna')
+            .addEventListener('click', function() {
+                formTambahPengguna.reset();
+                document.getElementById('statusTambahPengguna').textContent = '';
+                formPengguna.hidden = true;
+            });
+
     // PROSES TAMBAH PENGGUNA BARU
     const formTambahPengguna = document.getElementById('formTambahPengguna');
 

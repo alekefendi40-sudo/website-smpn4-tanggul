@@ -150,7 +150,7 @@
                 </div>
 
                 <!-- FORM TAMBAH FOTO -->
-                <div class="form-galeri">
+                <div class="form-galeri" id="panelFormGaleri" hidden>
                     <h3>Tambah Foto Galeri</h3>
 
                     <form id="formGaleri">
@@ -203,7 +203,7 @@
                         </button>
 
                         <button type="button" id="tombolBatalEditGaleri" hidden>
-                            Batal Edit
+                            Batal 
                         </button>
 
                         <p id="pesanGaleri"></p>
@@ -213,7 +213,12 @@
 
                 <!-- DAFTAR FOTO -->
                 <div class="daftar-galeri">
-                    <h3>Daftar Foto Galeri</h3>
+                    <div class="header-daftar-galeri">
+                        <h3>Daftar Foto Galeri</h3>
+                        <button type="button" id="tombolTambahGaleri">
+                            + Tambah Foto
+                        </button>
+                    </div>
 
                     <div id="statusDaftarGaleri">
                         Memuat galeri...
@@ -427,9 +432,13 @@
 
             tombolSimpanGaleri.textContent = 'Simpan Perubahan';
             tombolBatalEditGaleri.hidden = false;
+            tombolBatalEditGaleri.textContent = 'Batal Edit';
 
             pesanGaleri.textContent =
-                'Mode edit: silakan ubah informasi atau pilih foto baru.';
+            'Mode edit: silakan ubah informasi atau pilih foto baru.';
+
+            // Tampilkan formulir saat mode edit
+            document.querySelector('.form-galeri').hidden = false;
 
             formGaleri.scrollIntoView({
                 behavior: 'smooth',
@@ -441,10 +450,8 @@
         // GALERI: RESET FORMULIR
         // =====================================
 
+                
         function resetFormGaleri() {
-            tombolBatalEditGaleri.addEventListener('click', function() {
-                resetFormGaleri();
-            });
             formGaleri.reset();
 
             idGaleriDiedit = null;
@@ -462,9 +469,26 @@
 
             tombolSimpanGaleri.textContent = 'Simpan Foto';
             tombolBatalEditGaleri.hidden = true;
+            tombolBatalEditGaleri.textContent = 'Batal';
 
             pesanGaleri.textContent = '';
+
+            document.querySelector('.form-galeri').hidden = true;
         }
+
+        // =====================================
+        // GALERI: TOMBOL TAMBAH DAN BATAL
+        // =====================================
+
+        tombolTambahGaleri.addEventListener('click', function() {
+            resetFormGaleri();
+            document.querySelector('.form-galeri').hidden = false;
+            tombolBatalEditGaleri.hidden = false;
+        });
+
+        tombolBatalEditGaleri.addEventListener('click', function() {
+            resetFormGaleri();
+        });
 
         // =====================================
         // GALERI: HAPUS FOTO
