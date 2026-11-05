@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Berita - SMP Negeri 4 Tanggul</title>
+    <title>Kelola Galeri - SMP Negeri 4 Tanggul</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -134,22 +134,96 @@
                 </div>
             </header>
 
+            
+            
             <!-- KONTEN GALERI -->
-            <section class="daftar-berita">
+            <section class="daftar-berita halaman-galeri">
+
                 <div class="daftar-berita-header">
                     <div>
                         <h2>Pengelolaan Galeri Sekolah</h2>
                         <p>
-                            Halaman ini digunakan untuk mengelola foto
-                            dokumentasi kegiatan dan aktivitas sekolah.
+                            Tambahkan dan kelola dokumentasi kegiatan
+                            serta aktivitas SMP Negeri 4 Tanggul.
                         </p>
                     </div>
                 </div>
 
-                <div style="padding: 25px; color: #B9CADD;">
-                    <p>Fitur pengelolaan galeri akan segera tersedia.</p>
+                <!-- FORM TAMBAH FOTO -->
+                <div class="form-galeri">
+                    <h3>Tambah Foto Galeri</h3>
+
+                    <form id="formGaleri">
+
+                        <div class="form-group-galeri">
+                            <label for="judulGaleri">Judul Foto</label>
+                            <input
+                                type="text"
+                                id="judulGaleri"
+                                placeholder="Contoh: Kegiatan Upacara Bendera"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group-galeri">
+                            <label for="keteranganGaleri">Keterangan</label>
+                            <textarea
+                                id="keteranganGaleri"
+                                rows="3"
+                                placeholder="Tuliskan keterangan foto..."
+                            ></textarea>
+                        </div>
+
+                        <div class="form-group-galeri">
+                            <label for="fileGaleri">Pilih Foto</label>
+                            <input
+                                type="file"
+                                id="fileGaleri"
+                                accept="image/jpeg,image/png,image/webp"
+                                required
+                            >
+                            <small>Format JPG, PNG, atau WebP.</small>
+                        </div>
+
+                        <!-- PRATINJAU FOTO -->
+                        <div id="pratinjauGaleri" class="pratinjau-galeri" hidden>
+                            <img id="gambarPratinjauGaleri" alt="Pratinjau foto">
+                        </div>
+
+                        <div class="form-group-galeri">
+                            <label for="statusGaleri">Status Foto</label>
+                            <select id="statusGaleri">
+                                <option value="draft">Draft (Belum Ditampilkan)</option>
+                                <option value="published">Terbit (Tampilkan di Website)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" id="tombolSimpanGaleri">
+                            Simpan Foto
+                        </button>
+
+                        <button type="button" id="tombolBatalEditGaleri" hidden>
+                            Batal Edit
+                        </button>
+
+                        <p id="pesanGaleri"></p>
+
+                    </form>
                 </div>
+
+                <!-- DAFTAR FOTO -->
+                <div class="daftar-galeri">
+                    <h3>Daftar Foto Galeri</h3>
+
+                    <div id="statusDaftarGaleri">
+                        Memuat galeri...
+                    </div>
+
+                    <div id="gridGaleri" class="grid-galeri"></div>
+                </div>
+
             </section>
+
 
         </main>
 
@@ -176,12 +250,19 @@
 
         const { data: profil, error: profilError } = await supabase
             .from('profiles')
-            .select('nama_lengkap, peran')
+            .select('nama_lengkap, peran, akun_aktif')
             .eq('id', sesi.session.user.id)
             .single();
 
         if (profilError || !profil) {
             await supabase.auth.signOut();
+            window.location.href = 'login-admin.html';
+            return false;
+        }
+
+        if (profil.akun_aktif !== true) {
+            await supabase.auth.signOut();
+            sessionStorage.removeItem('peranAdmin');
             window.location.href = 'login-admin.html';
             return false;
         }
@@ -262,6 +343,427 @@
     document.querySelectorAll('.sidebar-menu a').forEach(function(menu) {
         menu.addEventListener('click', tutupSidebarMobile);
     });
+
+    
+    // =====================================
+    // GALERI: PRATINJAU FOTO
+    // =====================================
+
+    const formGaleri = document.getElementById('formGaleri');
+    const fileGaleri = document.getElementById('fileGaleri');
+    const pratinjauGaleri = document.getElementById('pratinjauGaleri');
+    const gambarPratinjauGaleri = document.getElementById('gambarPratinjauGaleri');
+    const pesanGaleri = document.getElementById('pesanGaleri');
+    const tombolSimpanGaleri = document.getElementById('tombolSimpanGaleri');
+
+    let urlPratinjauGaleri = null;
+    let idGaleriDiedit = null;
+    let pathFotoLama = null;
+
+    if (aksesDiizinkan) {
+
+        // Memilih foto dan menampilkan pratinjau
+        fileGaleri.addEventListener('change', function() {
+            const file = fileGaleri.files[0];
+
+            if (urlPratinjauGaleri) {
+                URL.revokeObjectURL(urlPratinjauGaleri);
+                urlPratinjauGaleri = null;
+            }
+
+            pratinjauGaleri.hidden = true;
+
+            if (!file) return;
+
+            const formatDiizinkan = [
+                'image/jpeg',
+                'image/png',
+                'image/webp'
+            ];
+
+            if (!formatDiizinkan.includes(file.type)) {
+                alert('Format foto harus JPG, PNG, atau WebP.');
+                fileGaleri.value = '';
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Ukuran foto maksimal 5 MB.');
+                fileGaleri.value = '';
+                return;
+            }
+
+            urlPratinjauGaleri = URL.createObjectURL(file);
+            gambarPratinjauGaleri.src = urlPratinjauGaleri;
+            pratinjauGaleri.hidden = false;
+        });
+
+        // =====================================
+        // GALERI: MODE EDIT
+        // =====================================
+
+        const tombolBatalEditGaleri =
+            document.getElementById('tombolBatalEditGaleri');
+
+        function mulaiEditGaleri(foto) {
+            idGaleriDiedit = foto.id;
+            pathFotoLama = foto.file_path;
+
+            document.getElementById('judulGaleri').value = foto.judul;
+            document.getElementById('keteranganGaleri').value =
+                foto.keterangan || '';
+            document.getElementById('statusGaleri').value = foto.status;
+
+            // Tampilkan foto lama sebagai pratinjau
+            const { data: urlData } = supabase.storage
+                .from('galeri-sekolah')
+                .getPublicUrl(foto.file_path);
+
+            gambarPratinjauGaleri.src = urlData.publicUrl;
+            pratinjauGaleri.hidden = false;
+
+            // Foto tidak wajib dipilih ulang
+            fileGaleri.required = false;
+
+            tombolSimpanGaleri.textContent = 'Simpan Perubahan';
+            tombolBatalEditGaleri.hidden = false;
+
+            pesanGaleri.textContent =
+                'Mode edit: silakan ubah informasi atau pilih foto baru.';
+
+            formGaleri.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // =====================================
+        // GALERI: RESET FORMULIR
+        // =====================================
+
+        function resetFormGaleri() {
+            tombolBatalEditGaleri.addEventListener('click', function() {
+                resetFormGaleri();
+            });
+            formGaleri.reset();
+
+            idGaleriDiedit = null;
+            pathFotoLama = null;
+
+            fileGaleri.required = true;
+
+            pratinjauGaleri.hidden = true;
+            gambarPratinjauGaleri.removeAttribute('src');
+
+            if (urlPratinjauGaleri) {
+                URL.revokeObjectURL(urlPratinjauGaleri);
+                urlPratinjauGaleri = null;
+            }
+
+            tombolSimpanGaleri.textContent = 'Simpan Foto';
+            tombolBatalEditGaleri.hidden = true;
+
+            pesanGaleri.textContent = '';
+        }
+
+        // =====================================
+        // GALERI: HAPUS FOTO
+        // =====================================
+
+        async function hapusFotoGaleri(foto) {
+            const konfirmasi = confirm(
+                'Apakah Anda yakin ingin menghapus foto "' +
+                foto.judul +
+                '"?\n\nFoto yang dihapus tidak dapat ditampilkan kembali.'
+            );
+
+            if (!konfirmasi) return;
+
+            try {
+                const { error: hapusDataError } = await supabase
+                    .from('galeri')
+                    .delete()
+                    .eq('id', foto.id);
+
+                if (hapusDataError) throw hapusDataError;
+
+                const { error: hapusFileError } = await supabase.storage
+                    .from('galeri-sekolah')
+                    .remove([foto.file_path]);
+
+                if (hapusFileError) {
+                    console.error('File Storage belum terhapus:', hapusFileError);
+
+                    alert(
+                        'Data galeri berhasil dihapus, tetapi file foto di Storage belum berhasil dihapus. Perlu dibersihkan kemudian.'
+                    );
+                } else {
+                    alert('Foto galeri berhasil dihapus.');
+                }
+
+                // Jika foto yang dihapus sedang diedit, reset formulir
+                if (idGaleriDiedit === foto.id) {
+                    resetFormGaleri();
+                }
+
+                await muatDaftarGaleri();
+
+            } catch (error) {
+                console.error('Gagal menghapus foto:', error);
+
+                alert('Gagal menghapus foto: ' + error.message);
+            }
+        }
+
+        // =====================================
+        // GALERI: MEMUAT DAFTAR FOTO
+        // =====================================
+
+        async function muatDaftarGaleri() {
+            const gridGaleri = document.getElementById('gridGaleri');
+            const statusDaftar = document.getElementById('statusDaftarGaleri');
+
+            statusDaftar.textContent = 'Memuat galeri...';
+            gridGaleri.replaceChildren();
+
+            try {
+                const { data, error } = await supabase
+                    .from('galeri')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    statusDaftar.textContent = 'Belum ada foto galeri.';
+                    return;
+                }
+
+                data.forEach(function(foto) {
+                    const kartu = document.createElement('div');
+                    kartu.className = 'item-galeri';
+
+                    const gambar = document.createElement('img');
+                    gambar.className = 'gambar-item-galeri';
+                    gambar.alt = foto.judul;
+                    gambar.loading = 'lazy';
+
+                    const { data: urlData } = supabase.storage
+                        .from('galeri-sekolah')
+                        .getPublicUrl(foto.file_path);
+
+                    gambar.src = urlData.publicUrl;
+
+                    const isi = document.createElement('div');
+                    isi.className = 'isi-item-galeri';
+
+                    const judul = document.createElement('h4');
+                    judul.textContent = foto.judul;
+
+                    const keterangan = document.createElement('p');
+                    keterangan.textContent = foto.keterangan || 'Tidak ada keterangan.';
+
+                    const status = document.createElement('span');
+                    status.className = 'status-item-galeri';
+                    status.textContent = foto.status === 'published'
+                        ? 'Terbit'
+                        : 'Draft';
+
+                    isi.append(judul, keterangan, status);
+
+                    // Tombol Edit
+                    const tombolEdit = document.createElement('button');
+                    tombolEdit.type = 'button';
+                    tombolEdit.textContent = 'Edit';
+                    tombolEdit.className = 'tombol-edit-galeri';
+
+                    tombolEdit.addEventListener('click', function() {
+                        mulaiEditGaleri(foto);
+                    });
+
+                    // Tombol Hapus
+                    const tombolHapus = document.createElement('button');
+                    tombolHapus.type = 'button';
+                    tombolHapus.textContent = 'Hapus';
+                    tombolHapus.className = 'tombol-hapus-galeri';
+
+                    tombolHapus.addEventListener('click', function() {
+                        hapusFotoGaleri(foto);
+                    });
+
+                    const aksi = document.createElement('div');
+                    aksi.className = 'aksi-item-galeri';
+                   aksi.append(tombolEdit, tombolHapus);
+
+                    kartu.append(gambar, isi, aksi);
+                    gridGaleri.appendChild(kartu);
+                });
+
+                statusDaftar.textContent =
+                    'Berhasil memuat ' + data.length + ' foto galeri.';
+
+            } catch (error) {
+                console.error('Gagal memuat galeri:', error);
+                statusDaftar.textContent =
+                    'Gagal memuat galeri: ' + error.message;
+            }
+        }
+
+
+        // =====================================
+        // GALERI: SIMPAN FOTO
+        // =====================================
+
+
+        formGaleri.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const judul = document.getElementById('judulGaleri').value.trim();
+            const keterangan = document.getElementById('keteranganGaleri').value.trim();
+            const file = fileGaleri.files[0];
+            const status = document.getElementById('statusGaleri').value;
+
+            if (!judul) {
+                alert('Judul foto wajib diisi.');
+                return;
+            }
+
+            if (!idGaleriDiedit && !file) {
+                alert('Silakan pilih foto terlebih dahulu.');
+                return;
+            }
+
+            const formatDiizinkan = [
+                'image/jpeg',
+                'image/png',
+                'image/webp'
+            ];
+
+            if (file && (
+                !formatDiizinkan.includes(file.type) ||
+                file.size > 5 * 1024 * 1024
+            )) {
+                alert('Periksa kembali format dan ukuran foto. Maksimal 5 MB.');
+                return;
+            }
+
+            tombolSimpanGaleri.disabled = true;
+            tombolSimpanGaleri.textContent = idGaleriDiedit
+                ? 'Menyimpan Perubahan...'
+                : 'Mengunggah Foto...';
+
+            pesanGaleri.textContent = 'Sedang menyimpan data...';
+
+            let pathFotoBaru = null;
+
+            try {
+                const { data: sesiData, error: sesiError } =
+                    await supabase.auth.getSession();
+
+                if (sesiError || !sesiData.session) {
+                    throw new Error('Sesi login tidak ditemukan. Silakan login kembali.');
+                }
+
+                const penggunaId = sesiData.session.user.id;
+                let pathFoto = pathFotoLama;
+
+                // Upload hanya jika pengguna memilih foto baru
+                if (file) {
+                    const ekstensi = {
+                        'image/jpeg': 'jpg',
+                        'image/png': 'png',
+                        'image/webp': 'webp'
+                    }[file.type];
+
+                    const namaFile =
+                        Date.now() + '-' + crypto.randomUUID() + '.' + ekstensi;
+
+                    pathFotoBaru = penggunaId + '/' + namaFile;
+
+                    const { error: uploadError } = await supabase.storage
+                        .from('galeri-sekolah')
+                        .upload(pathFotoBaru, file, {
+                            contentType: file.type,
+                            upsert: false
+                        });
+
+                    if (uploadError) throw uploadError;
+
+                    pathFoto = pathFotoBaru;
+                }
+
+                const dataGaleri = {
+                    judul: judul,
+                    keterangan: keterangan || null,
+                    status: status,
+                    file_path: pathFoto
+                };
+
+                let hasilSimpan;
+
+                if (idGaleriDiedit) {
+                    hasilSimpan = await supabase
+                        .from('galeri')
+                        .update(dataGaleri)
+                        .eq('id', idGaleriDiedit);
+                } else {
+                    dataGaleri.created_by = penggunaId;
+
+                    hasilSimpan = await supabase
+                        .from('galeri')
+                        .insert(dataGaleri);
+                }
+
+                if (hasilSimpan.error) throw hasilSimpan.error;
+
+                // Hapus foto lama hanya setelah data berhasil diperbarui
+                if (idGaleriDiedit && pathFotoBaru && pathFotoLama) {
+                    const { error: hapusFotoLamaError } = await supabase.storage
+                        .from('galeri-sekolah')
+                        .remove([pathFotoLama]);
+
+                    if (hapusFotoLamaError) {
+                        console.error('Foto lama belum terhapus:', hapusFotoLamaError);
+                    }
+                }
+
+                pesanGaleri.textContent = idGaleriDiedit
+                    ? 'Perubahan galeri berhasil disimpan!'
+                    : 'Foto berhasil disimpan!';
+
+                pesanGaleri.style.color = '#77C4EE';
+
+                resetFormGaleri();
+                await muatDaftarGaleri();
+
+            } catch (error) {
+                console.error('Gagal menyimpan galeri:', error);
+
+                // Bersihkan foto baru jika penyimpanan database gagal
+                if (pathFotoBaru) {
+                    await supabase.storage
+                        .from('galeri-sekolah')
+                        .remove([pathFotoBaru]);
+                }
+
+                pesanGaleri.textContent =
+                    'Gagal menyimpan galeri: ' + error.message;
+                pesanGaleri.style.color = '#F28B82';
+
+            } finally {
+                tombolSimpanGaleri.disabled = false;
+                tombolSimpanGaleri.textContent = idGaleriDiedit
+                    ? 'Simpan Perubahan'
+                    : 'Simpan Foto';
+            }
+        });
+
+
+
+        // Muat daftar foto saat halaman dibuka
+        await muatDaftarGaleri();
+    }
+
 
 </script>
 
