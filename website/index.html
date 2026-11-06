@@ -290,6 +290,7 @@
     </section>
    
     
+    
     <section class="pengumuman" id="pengumuman">
 
       <div class="section-heading">
@@ -549,8 +550,35 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
 
         <div class="berita-content">
+          
           <span class="berita-kategori">BERITA SEKOLAH</span>
+            <div class="berita-tanggal">
+              <svg xmlns="http://www.w3.org/2000/svg"
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round">
+                <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                <line x1="16" y1="3" x2="16" y2="7"></line>
+                <line x1="8" y1="3" x2="8" y2="7"></line>
+                <line x1="3" y1="11" x2="21" y2="11"></line>
+              </svg>
+
+              <span>
+                ${new Date(berita.published_at).toLocaleDateString('id-ID', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                  timeZone: 'Asia/Jakarta'
+                })}
+              </span>
+            </div>
           <h3>${berita.judul}</h3>
+
           <p>${berita.ringkasan || ''}</p>
         </div>
       </a>
