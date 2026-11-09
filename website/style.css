@@ -6137,7 +6137,7 @@ nav a:not(.tombol-pengelola):hover .nav-icon {
 }
 
 /* HEADER DAN MENU PADA HP */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .navbar {
     flex-direction: row;
     justify-content: space-between;
@@ -6180,7 +6180,7 @@ nav a:not(.tombol-pengelola):hover .nav-icon {
 }
 
 /* MENU HAMBURGER TERBUKA */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .navbar {
     position: sticky;
   }
