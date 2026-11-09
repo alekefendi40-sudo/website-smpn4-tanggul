@@ -1971,45 +1971,7 @@ button,
   );
 }
 
-/* ORNAMEN GEOMETRIS */
-.berita::before {
-  content: "";
-  position: absolute;
-  inset: 0;
 
-  background:
-    /* Lingkaran biru kiri atas */
-    radial-gradient(
-      circle at 4% 12%,
-      rgba(3, 127, 197, 0.10) 0 100px,
-      transparent 101px
-    ),
-
-    /* Cincin cyan kanan atas */
-    radial-gradient(
-      circle at 96% 18%,
-      transparent 0 75px,
-      rgba(72, 185, 233, 0.20) 76px 84px,
-      transparent 85px
-    ),
-
-    /* Aksen merah kanan bawah */
-    radial-gradient(
-      circle at 92% 90%,
-      rgba(216, 36, 27, 0.09) 0 65px,
-      transparent 66px
-    ),
-
-    /* Lingkaran biru muda */
-    radial-gradient(
-      circle at 45% 100%,
-      rgba(189, 234, 249, 0.35) 0 75px,
-      transparent 76px
-    );
-
-  z-index: -1;
-  pointer-events: none;
-}
 
 /* KONTEN BERITA TETAP DI ATAS BACKGROUND */
 .berita .section-heading,
@@ -5725,14 +5687,7 @@ footer {
     width: 75%;
   }
 
-  .hero::before {
-    background: linear-gradient(
-      90deg,
-      rgba(16, 26, 45, 0.98) 0%,
-      rgba(16, 26, 45, 0.88) 45%,
-      rgba(16, 26, 45, 0.45) 100%
-    );
-  }
+  
 
   .hero-background img {
     object-position: 60% center;
