@@ -6425,7 +6425,7 @@ nav a:not(.tombol-pengelola):hover .nav-icon {
 
 .kabar-content p {
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   margin: 0 0 18px;
@@ -6485,7 +6485,7 @@ nav a:not(.tombol-pengelola):hover .nav-icon {
 
   .kabar-content p {
     font-size: 12px;
-    -webkit-line-clamp: 2;
+    line-clamp: 2;
   }
 }
 

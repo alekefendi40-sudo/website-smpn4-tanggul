@@ -1,0 +1,9 @@
+
+User-agent: *
+Allow: /
+
+# Halaman admin tidak perlu ditampilkan di hasil pencarian
+Disallow: /*-admin.html
+
+# Lokasi sitemap
+Sitemap: https://smpn4tanggul.sch.id/sitemap.xml
