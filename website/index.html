@@ -1451,65 +1451,7 @@ if (input && hasil) {
 
 
 
-<script type="module">
-  import { supabase } from './supabase.js';
 
-  async function muatSambutanLengkap() {
-    try {
-      const { data, error } = await supabase
-        .from('sambutan_kepala_sekolah')
-        .select('*')
-        .order('id', { ascending: true })
-        .limit(1)
-        .single();
-
-      if (error) throw error;
-
-      if (!data) return;
-
-      // Tampilkan judul
-      document.getElementById('sambutanJudulLengkap').textContent =
-        data.judul || 'Sambutan Kepala Sekolah';
-
-      // Tampilkan nama kepala sekolah
-      document.getElementById('sambutanNamaLengkap').textContent =
-        data.nama_kepala_sekolah || '';
-
-      // Tampilkan seluruh isi sambutan
-      const wadahIsi = document.getElementById('sambutanIsiLengkap');
-      wadahIsi.replaceChildren();
-
-      const paragraf = (data.isi_sambutan || '')
-        .split(/\r?\n/)
-        .map(teks => teks.trim())
-        .filter(teks => teks.length > 0);
-
-      paragraf.forEach(teks => {
-        const p = document.createElement('p');
-        p.textContent = teks;
-        wadahIsi.appendChild(p);
-      });
-
-      // Tampilkan foto kepala sekolah
-      const foto = document.getElementById('sambutanFotoLengkap');
-
-      if (data.foto_url) {
-        foto.src = data.foto_url;
-        foto.hidden = false;
-      } else {
-        foto.hidden = true;
-      }
-
-    } catch (error) {
-      console.error('Gagal memuat sambutan:', error);
-
-      document.getElementById('sambutanIsiLengkap').textContent =
-        'Sambutan kepala sekolah belum dapat dimuat.';
-    }
-  }
-
-  muatSambutanLengkap();
-</script>
 
 
 
