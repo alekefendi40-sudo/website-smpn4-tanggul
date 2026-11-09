@@ -127,7 +127,7 @@
       <header class="dashboard-header">
         <div class="header-info">
             <h1>Dashboard</h1>
-            <p>Selamat datang di Panel Pengelola Website Sekolah.</p>
+            <p>Panel Pengelolaan Website SMP Negeri 4 Tanggul.</p>
         </div>
 
         <div class="header-date">
@@ -206,7 +206,7 @@
                 sessionStorage.setItem('peranAdmin', profil.peran);
 
                 document.getElementById('namaPengguna').textContent =
-                'Selamat datang, ' + profil.nama_lengkap;
+                profil.nama_lengkap;
 
                 document.getElementById('peranPengguna').textContent =
                 'Hak akses: ' + profil.peran;
