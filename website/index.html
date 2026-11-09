@@ -302,7 +302,23 @@
     </section>
     <!-- AKHIR STATISTIK SEKOLAH -->
 
-    
+        <!-- KABAR TERBARU SEKOLAH -->
+    <section class="kabar-terbaru" id="kabar-terbaru">
+
+      <div class="section-heading">
+        <span class="section-label">INFORMASI TERKINI</span>
+        <h2>Kabar Terbaru Sekolah</h2>
+        <p>Ikuti berita, pengumuman, dan dokumentasi terbaru
+          SMP Negeri 4 Tanggul.</p>
+      </div>
+
+      <div class="kabar-terbaru-list" id="kabarTerbaruList">
+        <p>Memuat kabar terbaru...</p>
+      </div>
+
+    </section>
+    <!-- AKHIR KABAR TERBARU SEKOLAH -->
+
     <!-- PROFIL SEKOLAH -->
     <section class="profil" id="profil">
 
@@ -464,6 +480,11 @@
 
             <p>Wassalamu'alaikum warahmatullahi wabarakatuh.</p>
           </div>
+
+          <a href="sambutan-kepala-sekolah.html" class="tombol-sambutan-lengkap">
+            Baca Selengkapnya
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
 
           <div class="sambutan-identitas">
             <strong>Kepala SMP Negeri 4 Tanggul</strong>
@@ -987,6 +1008,163 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+
+// =====================================
+// MEMUAT KABAR TERBARU SEKOLAH
+// =====================================
+
+async function muatKabarTerbaru() {
+  const wadah = document.getElementById('kabarTerbaruList');
+
+  const hariIni = new Date().toLocaleDateString('en-CA', {
+    timeZone: 'Asia/Jakarta'
+  });
+
+  try {
+    const [beritaRes, pengumumanRes, galeriRes] = await Promise.all([
+      supabase
+        .from('berita')
+        .select('judul, slug, ringkasan, gambar, published_at')
+        .eq('status', 'published')
+        .not('published_at', 'is', null),
+
+      supabase
+        .from('pengumuman')
+        .select('judul, isi_pengumuman, jenis, tanggal_mulai, tanggal_berakhir, created_at')
+        .eq('status', 'aktif')
+        .order('created_at', { ascending: false }),
+
+      supabase
+        .from('galeri')
+        .select('judul, keterangan, file_path, created_at')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false })
+    ]);
+
+    if (beritaRes.error) throw beritaRes.error;
+    if (pengumumanRes.error) throw pengumumanRes.error;
+    if (galeriRes.error) throw galeriRes.error;
+
+    const daftar = [];
+
+    // Masukkan berita
+    (beritaRes.data || []).forEach(item => {
+      daftar.push({
+        jenis: 'berita',
+        judul: item.judul,
+        tanggal: item.published_at,
+        deskripsi: item.ringkasan || '',
+        gambar: item.gambar,
+        tautan: `detail-berita.html?slug=${encodeURIComponent(item.slug)}`
+      });
+    });
+
+    // Masukkan pengumuman yang masih berlaku
+    (pengumumanRes.data || []).forEach(item => {
+      const mulai = !item.tanggal_mulai ||
+        item.tanggal_mulai <= hariIni;
+
+      const belumBerakhir = !item.tanggal_berakhir ||
+        item.tanggal_berakhir >= hariIni;
+
+      if (mulai && belumBerakhir) {
+        daftar.push({
+          jenis: item.jenis === 'penting'
+            ? 'pengumuman-penting'
+            : 'pengumuman',
+          judul: item.judul,
+          tanggal: item.created_at,
+          deskripsi: item.isi_pengumuman || '',
+          tautan: 'arsip-pengumuman.html'
+        });
+      }
+    });
+
+    // Masukkan galeri
+    (galeriRes.data || []).forEach(item => {
+      const { data: urlData } = supabase.storage
+        .from('galeri-sekolah')
+        .getPublicUrl(item.file_path);
+
+      daftar.push({
+        jenis: 'galeri',
+        judul: item.judul,
+        tanggal: item.created_at,
+        deskripsi: item.keterangan || '',
+        gambar: urlData.publicUrl,
+        tautan: 'galeri.html'
+      });
+    });
+
+    // Urutkan berdasarkan waktu terbaru
+    daftar.sort((a, b) =>
+      new Date(b.tanggal) - new Date(a.tanggal)
+    );
+
+    // Ambil 4 konten terbaru
+    const terbaru = daftar.slice(0, 4);
+
+    if (terbaru.length === 0) {
+      wadah.textContent = 'Belum ada kabar terbaru.';
+      return;
+    }
+
+    // Tampilkan kartu
+    wadah.innerHTML = terbaru.map(item => {
+      const label = {
+        berita: 'BERITA SEKOLAH',
+        pengumuman: 'PENGUMUMAN',
+        'pengumuman-penting': 'PENGUMUMAN PENTING',
+        galeri: 'GALERI'
+      }[item.jenis];
+
+      const tanggal = new Date(item.tanggal)
+        .toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+          timeZone: 'Asia/Jakarta'
+        });
+
+      const gambar = item.gambar
+        ? `<img src="${item.gambar}" alt="${item.judul}" loading="lazy">`
+        : `<div class="kabar-tanpa-gambar">
+             <i class="fa-solid fa-bell"></i>
+           </div>`;
+
+      return `
+        <a href="${item.tautan}" class="kabar-card">
+          <div class="kabar-gambar">
+            ${gambar}
+          </div>
+
+          <div class="kabar-content">
+            <span class="kabar-label ${item.jenis}">
+              ${label}
+            </span>
+
+            <span class="kabar-tanggal">${tanggal}</span>
+
+            <h3>${item.judul}</h3>
+
+            <p>${item.deskripsi}</p>
+
+            <span class="kabar-baca">
+              Lihat Selengkapnya
+              <i class="fa-solid fa-arrow-right"></i>
+            </span>
+          </div>
+        </a>
+      `;
+    }).join('');
+
+  } catch (error) {
+    console.error('Gagal memuat kabar terbaru:', error);
+    wadah.textContent = 'Kabar terbaru belum dapat dimuat.';
+  }
+}
+
+
 async function muatSambutanKepalaSekolah() {
   try {
     const { data, error } = await supabase
@@ -1015,7 +1193,8 @@ async function muatSambutanKepalaSekolah() {
     const paragraf = (data.isi_sambutan || '')
       .split(/\r?\n/)
       .map(teks => teks.trim())
-      .filter(teks => teks.length > 0);
+      .filter(teks => teks.length > 0)
+      .slice(0, 2);
 
     paragraf.forEach(teks => {
       const p = document.createElement('p');
@@ -1049,6 +1228,7 @@ async function muatSambutanKepalaSekolah() {
   muatBerita();
   muatPengumuman();
   muatGaleri();
+  muatKabarTerbaru();
 </script>
 
 
@@ -1268,6 +1448,70 @@ if (input && hasil) {
     });
   });
 </script>
+
+
+
+<script type="module">
+  import { supabase } from './supabase.js';
+
+  async function muatSambutanLengkap() {
+    try {
+      const { data, error } = await supabase
+        .from('sambutan_kepala_sekolah')
+        .select('*')
+        .order('id', { ascending: true })
+        .limit(1)
+        .single();
+
+      if (error) throw error;
+
+      if (!data) return;
+
+      // Tampilkan judul
+      document.getElementById('sambutanJudulLengkap').textContent =
+        data.judul || 'Sambutan Kepala Sekolah';
+
+      // Tampilkan nama kepala sekolah
+      document.getElementById('sambutanNamaLengkap').textContent =
+        data.nama_kepala_sekolah || '';
+
+      // Tampilkan seluruh isi sambutan
+      const wadahIsi = document.getElementById('sambutanIsiLengkap');
+      wadahIsi.replaceChildren();
+
+      const paragraf = (data.isi_sambutan || '')
+        .split(/\r?\n/)
+        .map(teks => teks.trim())
+        .filter(teks => teks.length > 0);
+
+      paragraf.forEach(teks => {
+        const p = document.createElement('p');
+        p.textContent = teks;
+        wadahIsi.appendChild(p);
+      });
+
+      // Tampilkan foto kepala sekolah
+      const foto = document.getElementById('sambutanFotoLengkap');
+
+      if (data.foto_url) {
+        foto.src = data.foto_url;
+        foto.hidden = false;
+      } else {
+        foto.hidden = true;
+      }
+
+    } catch (error) {
+      console.error('Gagal memuat sambutan:', error);
+
+      document.getElementById('sambutanIsiLengkap').textContent =
+        'Sambutan kepala sekolah belum dapat dimuat.';
+    }
+  }
+
+  muatSambutanLengkap();
+</script>
+
+
 
 </body>
 </html>

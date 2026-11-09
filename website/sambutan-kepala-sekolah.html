@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sambutan Kepala Sekolah | SMP Negeri 4 Tanggul</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+  <main class="halaman-sambutan">
+
+    <a href="index.html" class="kembali-sambutan">
+      <i class="fa-solid fa-arrow-left"></i>
+      Kembali ke Beranda
+    </a>
+
+    <article class="sambutan-lengkap">
+
+      <div class="sambutan-lengkap-header">
+        <span class="section-label">SAMBUTAN KEPALA SEKOLAH</span>
+        <h1 id="sambutanJudulLengkap">Memuat sambutan...</h1>
+      </div>
+
+      <div class="sambutan-lengkap-foto">
+        <img id="sambutanFotoLengkap" src="" alt="Foto Kepala Sekolah" hidden>
+      </div>
+
+      <div id="sambutanIsiLengkap" class="sambutan-lengkap-isi">
+        Memuat isi sambutan...
+      </div>
+
+      <div class="sambutan-lengkap-identitas">
+        <strong>Kepala SMP Negeri 4 Tanggul</strong>
+        <span id="sambutanNamaLengkap">Memuat nama...</span>
+      </div>
+
+    </article>
+
+  </main>
+
+<script type="module">
+  import { supabase } from './supabase.js';
+
+  async function muatSambutanLengkap() {
+    try {
+      const { data, error } = await supabase
+        .from('sambutan_kepala_sekolah')
+        .select('*')
+        .order('id', { ascending: true })
+        .limit(1)
+        .single();
+
+      if (error) throw error;
+      if (!data) return;
+
+      // Tampilkan judul
+      document.getElementById('sambutanJudulLengkap').textContent =
+        data.judul || 'Sambutan Kepala Sekolah';
+
+      // Tampilkan nama kepala sekolah
+      document.getElementById('sambutanNamaLengkap').textContent =
+        data.nama_kepala_sekolah || '';
+
+      // Tampilkan seluruh isi sambutan
+      const wadahIsi = document.getElementById('sambutanIsiLengkap');
+      wadahIsi.replaceChildren();
+
+      const paragraf = (data.isi_sambutan || '')
+        .split(/\r?\n/)
+        .map(teks => teks.trim())
+        .filter(teks => teks.length > 0);
+
+      paragraf.forEach(teks => {
+        const p = document.createElement('p');
+        p.textContent = teks;
+        wadahIsi.appendChild(p);
+      });
+
+      // Tampilkan foto kepala sekolah
+      const foto = document.getElementById('sambutanFotoLengkap');
+
+      if (data.foto_url) {
+        foto.src = data.foto_url;
+        foto.hidden = false;
+      } else {
+        foto.hidden = true;
+      }
+
+    } catch (error) {
+      console.error('Gagal memuat sambutan:', error);
+
+      document.getElementById('sambutanIsiLengkap').textContent =
+        'Sambutan kepala sekolah belum dapat dimuat.';
+    }
+  }
+
+  muatSambutanLengkap();
+</script>
+
+</body>
+</html>
