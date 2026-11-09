@@ -6082,3 +6082,44 @@ nav a:not(.tombol-pengelola):hover .nav-icon {
   transform: translateY(-3px);
   box-shadow: 0 12px 28px rgba(16, 26, 45, 0.08);
 }
+
+/* PERBAIKAN PROFIL PADA HP */
+@media (max-width: 768px) {
+
+  /* Mengurangi jarak tepi kiri dan kanan */
+  .profil {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  /* Memastikan kartu tidak melebar keluar */
+  .profil-container,
+  .profil-pembuka,
+  .profil-identitas,
+  .profil-sejarah,
+  .profil-visi,
+  .profil-misi {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  /* Mencegah isi identitas melewati batas kartu */
+  .profil-identitas-grid {
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+  }
+
+  .profil-identitas-grid p {
+    min-width: 0;
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+  }
+
+  .profil-identitas-grid span {
+    display: block;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
