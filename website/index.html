@@ -84,7 +84,11 @@
         <p>Berkarakter Pancasila, Literat, dan Berprestasi</p>
       </div>
     </div>
-
+    
+    <button type="button" class="tombol-menu" id="tombolMenu"
+      aria-label="Buka menu navigasi" aria-expanded="false">
+      <i class="fa-solid fa-bars"></i>
+    </button>
 
     <nav>
       <a href="index.html">
@@ -1243,6 +1247,27 @@ if (input && hasil) {
 }
 </script>
 
+<script>
+  const tombolMenu = document.getElementById('tombolMenu');
+  const menuNavigasi = document.querySelector('.navbar nav');
+
+  tombolMenu.addEventListener('click', function () {
+    const menuTerbuka = menuNavigasi.classList.toggle('menu-terbuka');
+
+    tombolMenu.setAttribute('aria-expanded', menuTerbuka);
+    tombolMenu.innerHTML = menuTerbuka
+      ? '<i class="fa-solid fa-xmark"></i>'
+      : '<i class="fa-solid fa-bars"></i>';
+  });
+
+  menuNavigasi.querySelectorAll('a').forEach(function (link) {
+    link.addEventListener('click', function () {
+      menuNavigasi.classList.remove('menu-terbuka');
+      tombolMenu.setAttribute('aria-expanded', 'false');
+      tombolMenu.innerHTML = '<i class="fa-solid fa-bars"></i>';
+    });
+  });
+</script>
 
 </body>
 </html>
