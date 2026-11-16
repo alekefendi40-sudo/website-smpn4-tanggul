@@ -6524,3 +6524,148 @@ nav a:not(.tombol-pengelola):hover .nav-icon {
   box-shadow: none;
   position: static;
 }
+
+
+
+/* =========================================
+   MEDIA SOSIAL — KARTU PLATFORM
+   ========================================= */
+
+.media-sosial {
+  padding: 65px 6%;
+  background: linear-gradient(
+    135deg,
+    #EFF7FC 0%,
+    #F8FBFE 55%,
+    #FDF4F4 100%
+  );
+  position: relative;
+  overflow: hidden;
+}
+
+.media-sosial-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+  max-width: 1200px;
+  margin: 35px auto 0;
+}
+
+.media-sosial-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 27px 24px;
+  min-height: 225px;
+  background: #FFFFFF;
+  border: 1px solid #E5EDF4;
+  border-radius: 18px;
+  text-decoration: none;
+  box-shadow: 0 8px 25px rgba(23, 54, 93, 0.07);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.media-sosial-card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 15px 32px rgba(23, 54, 93, 0.14);
+}
+
+.media-sosial-icon {
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  color: #FFFFFF;
+  font-size: 28px;
+}
+
+.facebook .media-sosial-icon {
+  background: #1877F2;
+}
+
+.instagram .media-sosial-icon {
+  background: linear-gradient(135deg, #833AB4, #E1306C, #FCAF45);
+}
+
+.tiktok .media-sosial-icon {
+  background: #202020;
+}
+
+.youtube .media-sosial-icon {
+  background: #FF0000;
+}
+
+.media-sosial-info h3 {
+  margin: 0 0 9px;
+  color: #17365D;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.media-sosial-info p {
+  margin: 0 0 17px;
+  color: #64748B;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.media-sosial-info span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #007CC2;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.media-sosial-card:hover .media-sosial-info span {
+  color: #DA251C;
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .media-sosial-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Ponsel */
+@media (max-width: 520px) {
+  .media-sosial {
+    padding: 45px 5%;
+  }
+
+  .media-sosial-grid {
+    gap: 13px;
+    margin-top: 25px;
+  }
+
+  .media-sosial-card {
+    padding: 19px 16px;
+    min-height: 210px;
+    gap: 15px;
+    border-radius: 14px;
+  }
+
+  .media-sosial-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 23px;
+    border-radius: 13px;
+  }
+
+  .media-sosial-info h3 {
+    font-size: 16px;
+  }
+
+  .media-sosial-info p {
+    font-size: 12px;
+  }
+
+  .media-sosial-info span {
+    font-size: 11px;
+  }
+}
