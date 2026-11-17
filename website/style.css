@@ -6604,7 +6604,12 @@ nav a:not(.tombol-pengelola):hover .nav-icon {
   font-size: 19px;
   font-weight: 800;
 }
-
+.media-sosial-info .nama-akun {
+  margin: 0 0 9px;
+  color: #17365D;
+  font-size: 15px;
+  font-weight: 800;
+}
 .media-sosial-info p {
   margin: 0 0 17px;
   color: #64748B;
@@ -6669,3 +6674,4 @@ nav a:not(.tombol-pengelola):hover .nav-icon {
     font-size: 11px;
   }
 }
+
