@@ -180,14 +180,14 @@
                                 type="file"
                                 id="fileGaleri"
                                 accept="image/jpeg,image/png,image/webp"
-                                required
+                                multiple
                             >
-                            <small>Format JPG, PNG, atau WebP.</small>
+                            <small>Pilih satu atau beberapa foto sekaligus. Format JPG, PNG, atau WebP.</small>
                         </div>
 
                         <!-- PRATINJAU FOTO -->
                         <div id="pratinjauGaleri" class="pratinjau-galeri" hidden>
-                            <img id="gambarPratinjauGaleri" alt="Pratinjau foto">
+                            <div id="daftarPratinjauGaleri" class="daftar-pratinjau-galeri"></div>
                         </div>
 
                         <div class="form-group-galeri">
@@ -357,7 +357,7 @@
     const formGaleri = document.getElementById('formGaleri');
     const fileGaleri = document.getElementById('fileGaleri');
     const pratinjauGaleri = document.getElementById('pratinjauGaleri');
-    const gambarPratinjauGaleri = document.getElementById('gambarPratinjauGaleri');
+    const daftarPratinjauGaleri = document.getElementById('daftarPratinjauGaleri');
     const pesanGaleri = document.getElementById('pesanGaleri');
     const tombolSimpanGaleri = document.getElementById('tombolSimpanGaleri');
 
@@ -367,18 +367,15 @@
 
     if (aksesDiizinkan) {
 
-        // Memilih foto dan menampilkan pratinjau
+        
+        // Memilih beberapa foto dan menampilkan pratinjau
         fileGaleri.addEventListener('change', function() {
-            const file = fileGaleri.files[0];
-
-            if (urlPratinjauGaleri) {
-                URL.revokeObjectURL(urlPratinjauGaleri);
-                urlPratinjauGaleri = null;
-            }
-
+            daftarPratinjauGaleri.innerHTML = '';
             pratinjauGaleri.hidden = true;
 
-            if (!file) return;
+            const files = Array.from(fileGaleri.files);
+
+            if (files.length === 0) return;
 
             const formatDiizinkan = [
                 'image/jpeg',
@@ -386,22 +383,39 @@
                 'image/webp'
             ];
 
-            if (!formatDiizinkan.includes(file.type)) {
-                alert('Format foto harus JPG, PNG, atau WebP.');
+            const fotoTidakValid = files.some(file =>
+                !formatDiizinkan.includes(file.type) ||
+                file.size > 5 * 1024 * 1024
+            );
+
+            if (fotoTidakValid) {
+                alert('Ada foto dengan format tidak sesuai atau ukuran lebih dari 5 MB. Periksa kembali foto yang dipilih.');
                 fileGaleri.value = '';
                 return;
             }
 
-            if (file.size > 5 * 1024 * 1024) {
-                alert('Ukuran foto maksimal 5 MB.');
-                fileGaleri.value = '';
-                return;
-            }
+            files.forEach(file => {
+                const url = URL.createObjectURL(file);
 
-            urlPratinjauGaleri = URL.createObjectURL(file);
-            gambarPratinjauGaleri.src = urlPratinjauGaleri;
+                const gambar = document.createElement('img');
+                gambar.src = url;
+                gambar.alt = 'Pratinjau ' + file.name;
+
+                gambar.style.width = '100%';
+                gambar.style.height = '140px';
+                gambar.style.objectFit = 'cover';
+                gambar.style.borderRadius = '8px';
+
+                gambar.onload = function() {
+                    URL.revokeObjectURL(url);
+                };
+
+                daftarPratinjauGaleri.appendChild(gambar);
+            });
+
             pratinjauGaleri.hidden = false;
         });
+
 
         // =====================================
         // GALERI: MODE EDIT
@@ -424,7 +438,13 @@
                 .from('galeri-sekolah')
                 .getPublicUrl(foto.file_path);
 
-            gambarPratinjauGaleri.src = urlData.publicUrl;
+            daftarPratinjauGaleri.innerHTML = '';
+
+            const gambar = document.createElement('img');
+            gambar.src = urlData.publicUrl;
+            gambar.alt = 'Pratinjau foto lama';
+
+            daftarPratinjauGaleri.appendChild(gambar);
             pratinjauGaleri.hidden = false;
 
             // Foto tidak wajib dipilih ulang
@@ -460,7 +480,7 @@
             fileGaleri.required = true;
 
             pratinjauGaleri.hidden = true;
-            gambarPratinjauGaleri.removeAttribute('src');
+            daftarPratinjauGaleri.innerHTML = '';
 
             if (urlPratinjauGaleri) {
                 URL.revokeObjectURL(urlPratinjauGaleri);
@@ -644,7 +664,7 @@
 
             const judul = document.getElementById('judulGaleri').value.trim();
             const keterangan = document.getElementById('keteranganGaleri').value.trim();
-            const file = fileGaleri.files[0];
+            const files = Array.from(fileGaleri.files);
             const status = document.getElementById('statusGaleri').value;
 
             if (!judul) {
@@ -652,7 +672,7 @@
                 return;
             }
 
-            if (!idGaleriDiedit && !file) {
+            if (!idGaleriDiedit && files.length === 0) {
                 alert('Silakan pilih foto terlebih dahulu.');
                 return;
             }
@@ -663,11 +683,13 @@
                 'image/webp'
             ];
 
-            if (file && (
+            const fotoTidakValid = files.some(file =>
                 !formatDiizinkan.includes(file.type) ||
                 file.size > 5 * 1024 * 1024
-            )) {
-                alert('Periksa kembali format dan ukuran foto. Maksimal 5 MB.');
+            );
+
+            if (fotoTidakValid) {
+                alert('Ada foto dengan format tidak sesuai atau ukuran lebih dari 5 MB. Periksa kembali foto yang dipilih.');
                 return;
             }
 
@@ -678,7 +700,8 @@
 
             pesanGaleri.textContent = 'Sedang menyimpan data...';
 
-            let pathFotoBaru = null;
+            let pathFotoBaru = [];
+            let dataBerhasilDisimpan = false;
 
             try {
                 const { data: sesiData, error: sesiError } =
@@ -692,56 +715,102 @@
                 let pathFoto = pathFotoLama;
 
                 // Upload hanya jika pengguna memilih foto baru
-                if (file) {
-                    const ekstensi = {
-                        'image/jpeg': 'jpg',
-                        'image/png': 'png',
-                        'image/webp': 'webp'
-                    }[file.type];
-
-                    const namaFile =
-                        Date.now() + '-' + crypto.randomUUID() + '.' + ekstensi;
-
-                    pathFotoBaru = penggunaId + '/' + namaFile;
-
-                    const { error: uploadError } = await supabase.storage
-                        .from('galeri-sekolah')
-                        .upload(pathFotoBaru, file, {
-                            contentType: file.type,
-                            upsert: false
-                        });
-
-                    if (uploadError) throw uploadError;
-
-                    pathFoto = pathFotoBaru;
-                }
-
-                const dataGaleri = {
-                    judul: judul,
-                    keterangan: keterangan || null,
-                    status: status,
-                    file_path: pathFoto
-                };
-
-                let hasilSimpan;
 
                 if (idGaleriDiedit) {
-                    hasilSimpan = await supabase
+                    // Mode edit: tetap mengubah satu foto
+                    if (files.length > 1) {
+                        throw new Error('Saat mengedit, pilih maksimal satu foto baru.');
+                    }
+
+                    let pathFoto = pathFotoLama;
+
+                    if (files.length === 1) {
+                        const file = files[0];
+
+                        const ekstensi = {
+                            'image/jpeg': 'jpg',
+                            'image/png': 'png',
+                            'image/webp': 'webp'
+                        }[file.type];
+
+                        const namaFile =
+                            Date.now() + '-' + crypto.randomUUID() + '.' + ekstensi;
+
+                        pathFoto = penggunaId + '/' + namaFile;
+
+                        const { error: uploadError } = await supabase.storage
+                            .from('galeri-sekolah')
+                            .upload(pathFoto, file, {
+                                contentType: file.type,
+                                upsert: false
+                            });
+
+                        if (uploadError) throw uploadError;
+
+                        pathFotoBaru.push(pathFoto);
+                    }
+
+                    const dataGaleri = {
+                        judul: judul,
+                        keterangan: keterangan || null,
+                        status: status,
+                        file_path: pathFoto
+                    };
+
+                    const hasilSimpan = await supabase
                         .from('galeri')
                         .update(dataGaleri)
                         .eq('id', idGaleriDiedit);
+
+                    if (hasilSimpan.error) throw hasilSimpan.error;
+
                 } else {
-                    dataGaleri.created_by = penggunaId;
+                    // Mode tambah: upload semua foto
+                    const daftarGaleri = [];
 
-                    hasilSimpan = await supabase
+                    for (const file of files) {
+                        const ekstensi = {
+                            'image/jpeg': 'jpg',
+                            'image/png': 'png',
+                            'image/webp': 'webp'
+                        }[file.type];
+
+                        const namaFile =
+                            Date.now() + '-' + crypto.randomUUID() + '.' + ekstensi;
+
+                        const pathFoto = penggunaId + '/' + namaFile;
+
+                        const { error: uploadError } = await supabase.storage
+                            .from('galeri-sekolah')
+                            .upload(pathFoto, file, {
+                                contentType: file.type,
+                                upsert: false
+                            });
+
+                        if (uploadError) throw uploadError;
+
+                        pathFotoBaru.push(pathFoto);
+
+                        daftarGaleri.push({
+                            judul: judul,
+                            keterangan: keterangan || null,
+                            status: status,
+                            file_path: pathFoto,
+                            created_by: penggunaId
+                        });
+                    }
+
+                    const hasilSimpan = await supabase
                         .from('galeri')
-                        .insert(dataGaleri);
-                }
+                        .insert(daftarGaleri);
 
-                if (hasilSimpan.error) throw hasilSimpan.error;
+                    if (hasilSimpan.error) throw hasilSimpan.error;
+                }
+                
+                dataBerhasilDisimpan = true;
 
                 // Hapus foto lama hanya setelah data berhasil diperbarui
-                if (idGaleriDiedit && pathFotoBaru && pathFotoLama) {
+                if (idGaleriDiedit && pathFotoBaru.length > 0 && pathFotoLama) {
                     const { error: hapusFotoLamaError } = await supabase.storage
                         .from('galeri-sekolah')
                         .remove([pathFotoLama]);
@@ -752,10 +821,15 @@
                 }
 
                 pesanGaleri.textContent = idGaleriDiedit
-                    ? 'Perubahan galeri berhasil disimpan!'
-                    : 'Foto berhasil disimpan!';
+                    ? '✓ Perubahan galeri berhasil disimpan!'
+                    : '✓ Berhasil! ' + files.length + ' foto berhasil disimpan.';
 
-                pesanGaleri.style.color = '#77C4EE';
+                pesanGaleri.style.color = '#16A34A';
+                pesanGaleri.style.fontWeight = '700';
+                pesanGaleri.style.padding = '12px';
+                pesanGaleri.style.background = '#DCFCE7';
+                pesanGaleri.style.borderRadius = '8px';
+                pesanGaleri.style.display = 'block';
 
                 resetFormGaleri();
                 await muatDaftarGaleri();
@@ -764,10 +838,10 @@
                 console.error('Gagal menyimpan galeri:', error);
 
                 // Bersihkan foto baru jika penyimpanan database gagal
-                if (pathFotoBaru) {
+                if (!dataBerhasilDisimpan && pathFotoBaru.length > 0) {
                     await supabase.storage
                         .from('galeri-sekolah')
-                        .remove([pathFotoBaru]);
+                        .remove(pathFotoBaru);
                 }
 
                 pesanGaleri.textContent =
